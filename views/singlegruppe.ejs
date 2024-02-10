@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Gruppen Details</title>
+
+</head>
+
+<body>
+    <h1>Gruppenmitglieder</h1>
+
+    <div class="scrollable-container">
+        <% mitglieder.forEach(mitglied=> { %>
+            <div class="bewerb-container">
+            <p>
+                <%= mitglied.mit_name %>
+
+
+                <%= mitglied.mit_nachname %>
+
+                       
+            </p>
+            <% }); %>
+        </div>
+    </div>

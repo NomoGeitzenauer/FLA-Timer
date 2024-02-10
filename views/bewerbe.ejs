@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>FLA-Bewerbe</title>
+
+</head>
+
+<body>
+    <h1>Bewerbe</h1>
+
+    <div class="scrollable-container">
+        <% bewerbe.forEach(bewerb=> { %>
+            <div class="bewerb-container">
+            <p>
+                <%= bewerb.bew_name %>
+
+
+                <%= bewerb.bew_datum_formatted %>
+
+                        <a href="/bewerbe/<%=bewerb.id_bew%>">-></a>
+            </p>
+            <% }); %>
+        </div>
+    </div>
+    <div>
+    <form id="bewerbForm" class="create-bewerb">
+        <label for="bew_name">Bewerb Name:</label>
+        <input type="text" id="bew_name" name="bew_name" required><br>
+        <label for="bew_art">Bewerb Art</label>
+        <input type="number" id="bew_art" name="bew_art" required><br>
+        <label for="bew_wetter">Wetter</label>
+        <input type="text" id="bew_wetter" name="bew_wetter" required>
+        <button type="submit">Bewerb erstellen</button>
+    </form>
+</div>
+
+    <script>
+       document.getElementById("bewerbForm").addEventListener("submit", async (event) => {
+    event.preventDefault(); // Prevent default form submission behavior
+
+    const formData = new FormData(document.getElementById("bewerbForm"));
+
+    const bewerbData = {};
+    for (const [key, value] of formData.entries()) {
+        bewerbData[key] = value;
+    }
+
+    try {
+        const response = await fetch("/bewerbe", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json" // Set Content-Type to JSON
+            },
+            body: JSON.stringify(bewerbData) // Serialize form data as JSON
+        });
+        if(response.ok){
+            alert("Bewerb erstellt");
+            window.location.reload();
+        }
+        else{
+            alert("Fehler beim Erstellen des Bewerbs");
+        }
+    } catch (error) {
+        console.error('fetch /bewerb error:', error);
+    }
+});
+    </script>
+
+</body>
+
+</html>

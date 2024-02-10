@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Gruppen</title>
+
+</head>
+
+<body>
+    <h1>Gruppen</h1>
+
+    <div class="scrollable-container">
+        <% gruppen.forEach(gruppe=> { %>
+            <div class="bewerb-container">
+            <p>
+                <%= gruppe.gru_feuerwehr %>
+
+
+                <%= gruppe.gru_name %>
+
+                <a href="/bewerbe/gruppen/<%=gruppe.id_gru%>"> --></a>
+            </p>
+            <% }); %>
+        </div>
+    </div>
+<div class="formhs">
+    <form id="gruppeForm">
+        <label for="gru_feuerwehr">Gruppen Name:</label>
+        <input type="text" id="gru_feuerwehr" name="gru_feuerwehr" required><br>
+        <label for="gru_name">Gruppenname</label>
+        <input type="text" id="gru_name" name="gru_name" required><br>
+        <label for="gru_alterspunkte">Gruppen-Alterspunkte</label>
+        <input type="number" id="gru_alterspunkte" name="gru_alterspunkte" required>
+        <button type="submit">Gruppe erstellen</button>
+    </form>
+</div>
+
+    <script>
+       document.getElementById("gruppeForm").addEventListener("submit", async (event) => {
+    event.preventDefault(); // Prevent default form submission behavior
+
+    const formData = new FormData(document.getElementById("gruppeForm"));
+
+    const gruppenData = {};
+    for (const [key, value] of formData.entries()) {
+        gruppenData[key] = value;
+    }
+
+    try {
+        const response = await fetch("/bewerbe/gruppen", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json" // Set Content-Type to JSON
+            },
+            body: JSON.stringify(gruppenData) // Serialize form data as JSON
+        });
+        if(response.ok){
+            alert("Gruppe erstellt");
+            window.location.reload();
+        }
+        else{
+            alert("Fehler beim Erstellen des Bewerbs");
+        }
+    } catch (error) {
+        console.error('fetch /bewerb error:', error);
+    }
+});
+    </script>
+</body>
+
+</html>

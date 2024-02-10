@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>All Notes</title>
+</head>
+
+<body>
+    <h1>
+        Durchläufe
+    </h1>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Feuerwehr</th>
+                    <th>Gruppenname</th>
+                    <th>Bewerbsbahn</th>
+                    <th>Zeit</th>
+                    <th>Fehler-Ges.</th>
+                    <th>Punkte</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% durchlaufe.forEach(durchlauf=> { %>
+                    <tr>
+                        <td>
+                            <%= durchlauf.gru_feuerwehr %>
+                        </td>
+                        <td>
+                            <%= durchlauf.gru_name %>
+                        </td>
+                        <td>
+                            <%=durchlauf.dur_bewerbsbahn %>
+                        </td>
+                        <td>
+                            <%= durchlauf.dur_zeit%>
+                        </td>
+                        <td>
+                            <%= durchlauf['dur_fehler-gesamt'] %>
+                        </td>
+                        <td>
+                            <%= durchlauf.dur_punkte%>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+
+        <div class="bewerbDetails">
+            <h2 class="bewerbDetails">Bewerbsdetails</h2>
+            <ul>
+                <li>
+                    <%= formattedBewerb.bew_name%>
+                </li>
+                <li>
+                    <%= formattedBewerb.bew_datum_formatted%>
+                </li>
+                <li>
+                    Bewerbsart: 
+                    <%= formattedBewerb.bew_art%>
+                </li>
+                <li>
+                    Wetter: 
+                    <%= formattedBewerb.bew_wetter%>
+                </li>
+            </ul>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const tbody = document.querySelector("tbody");
+        
+                if (tbody.innerHTML.trim() === "") {
+                   
+                    alert("Noch keine Durchläufe vorhanden. Bitte füge welche hinzu.");
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+.scrollable-container {
+    max-height: 200px; /* Set your desired height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 10px solid #ccc; /* Optional: Add a border for visual clarity */
+    padding: 10px; /* Optional: Add some padding */
+    width: 50%; /* Set the width */
+}
+.bewerb-container {
+    
+    max-height: 200px;
+}
+.gru_box {
+    border: 1px solid #ccc; /* Add a border for visual clarity */
+    padding: 1px; /* Add some padding */
+
+    color: yellow;
+}
+
+
+h1 {
+
+   color: blue;
+}
+ h2.bewerbDetails {
+   color: green;
+   padding-left: 20px;
+}
+.create-bewerb{
+    margin-top: 10px;
+}
+.formhs{
+    border: 0px;
+}
