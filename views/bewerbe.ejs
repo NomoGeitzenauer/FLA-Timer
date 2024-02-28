@@ -5,69 +5,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/reset.css">
     <title>FLA-Bewerbe</title>
 
 </head>
 
 <body>
-    <h1>Bewerbe</h1>
+    <header>
+        <h1>FLA-Timer</h1>
+        <h2><a href="/bewerbe">Bewerbsübersicht</a></h2>
+        <h3>Bewerbe</h3>
+    </header>
 
-    <div class="scrollable-container">
-        <% bewerbe.forEach(bewerb=> { %>
-            <div class="bewerb-container">
-            <p>
-                <%= bewerb.bew_name %>
+    <main>
+        <form id="bewerbForm" class="create-bewerb">
+            <label for="bew_name">Bewerbsname:</label>
+            <input type="text" id="bew_name" name="bew_name" required>
 
+            <label for="bew_datum">Datum:</label>
+            <input type="datetime-local" id="bew_datum" name="bew_datum" required>
 
-                <%= bewerb.bew_datum_formatted %>
+            <label for="bew_art">Bewerbsart:</label>
+            <div class="weather-selector">
+                <span>
+                    <input type="radio" name="bew_art" id="1">
+                    <label for="1">Sonne</label>
+                </span>
+                <span>
+                    <input type="radio" name="bew_art" id="2">
+                    <label for="2">Regen</label>
+                </span>
+                <span>
+                    <input type="radio" name="bew_art" id="3">
+                    <label for="3">Gewitter</label>
+                </span>
+            </div>
+            <!-- <input type="number" id="bew_art" name="bew_art" required>
+             -->
 
-                        <a href="/bewerbe/<%=bewerb.id_bew%>">-></a>
-            </p>
-            <% }); %>
+            <label for="bew_wetter">Wetter:</label>
+            <input type="text" id="bew_wetter" name="bew_wetter" required>
+
+            <button class="full-width" type="submit">Bewerb erstellen</button>
+        </form>
+
+        <p class="center">Angelegte Bewerbe:</p>
+
+        <div class="scrollable-container">
+            <% bewerbe.forEach(bewerb=> { %>
+                <a href="/bewerbe/<%=bewerb.id_bew%>">
+                    <%= bewerb.bew_name %>
+                        <%= bewerb.bew_datum_formatted %>
+                </a>
+                <button data-index="<%=bewerb.id_bew%>" type="button" id="deleteBewerb">X</button>
+                <% }); %>
         </div>
-    </div>
-    <div>
-    <form id="bewerbForm" class="create-bewerb">
-        <label for="bew_name">Bewerb Name:</label>
-        <input type="text" id="bew_name" name="bew_name" required><br>
-        <label for="bew_art">Bewerb Art</label>
-        <input type="number" id="bew_art" name="bew_art" required><br>
-        <label for="bew_wetter">Wetter</label>
-        <input type="text" id="bew_wetter" name="bew_wetter" required>
-        <button type="submit">Bewerb erstellen</button>
-    </form>
-</div>
+    </main>
 
+    <footer>
+        <p>2024 Thomas & Nomo</p>
+    </footer>
     <script>
-       document.getElementById("bewerbForm").addEventListener("submit", async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
+        // import { deleteBewerb } from './database.mjs';
 
-    const formData = new FormData(document.getElementById("bewerbForm"));
-
-    const bewerbData = {};
-    for (const [key, value] of formData.entries()) {
-        bewerbData[key] = value;
-    }
-
-    try {
-        const response = await fetch("/bewerbe", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json" // Set Content-Type to JSON
-            },
-            body: JSON.stringify(bewerbData) // Serialize form data as JSON
+        buttons = document.querySelectorAll('#deleteBewerb');
+        buttons.forEach(item => {
+            item.addEventListener("click", event => {
+                const bewerbId = event.target.dataset.index;
+                console.log(bewerbId);
+                deleteBewerb(bewerbId);
+            })
         });
-        if(response.ok){
-            alert("Bewerb erstellt");
-            window.location.reload();
-        }
-        else{
-            alert("Fehler beim Erstellen des Bewerbs");
-        }
-    } catch (error) {
-        console.error('fetch /bewerb error:', error);
-    }
-});
+
+        document.getElementById("bewerbForm").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission behavior
+
+            const formData = new FormData(document.getElementById("bewerbForm"));
+
+            const bewerbData = {};
+            for (const [key, value] of formData.entries()) {
+                bewerbData[key] = value;
+            }
+
+            try {
+                const response = await fetch("/bewerbe", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json" // Set Content-Type to JSON
+                    },
+                    body: JSON.stringify(bewerbData) // Serialize form data as JSON
+                });
+                if (response.ok) {
+                    alert("Bewerb erstellt");
+                    window.location.reload();
+                }
+                else {
+                    alert("Fehler beim Erstellen des Bewerbs");
+                }
+            } catch (error) {
+                console.error('fetch /bewerb error:', error);
+            }
+        });
     </script>
 
 </body>

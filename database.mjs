@@ -24,14 +24,23 @@ export async function getBewerb(bew_id) {
     return rows[0];
 }
 
-export async function createBewerb(bew_name, bew_art, bew_wetter) {
+export async function createBewerb(bew_name, bew_art, bew_wetter,bew_datum) {
     const result = await pool.query(`
-    INSERT INTO tbl_bewerb (bew_name, bew_art, bew_wetter)
-    VALUES (?, ?, ?)
-    `, [bew_name, bew_art, bew_wetter]);
+    INSERT INTO tbl_bewerb (bew_name, bew_art, bew_wetter,bew_datum)
+    VALUES (?, ?, ?, ?)
+    `, [bew_name, bew_art, bew_wetter,bew_datum]);
+    
     const bew_id = result[0].insertId
     return getBewerb(bew_id);
 
+}
+
+export async function deleteBewerb(bew_id) {
+    await pool.query(`
+    DELETE FROM tbl_bewerb
+    WHERE id_bew = ?
+    `, [bew_id]);
+    console.log(bew_id);
 }
 
 export async function getGruppen() {
@@ -62,7 +71,7 @@ export async function getdruchlaufe(bewerbID) {
         SELECT d.*, b.bew_name, g.gru_name, g.gru_feuerwehr
         FROM tbl_durchlauf d
         JOIN tbl_bewerb b ON d.id_tbl_bew_fk = b.id_bew
-        JOIN tbl_gruppe g ON d.id_tbl_gru_fk = g.id_gru
+        JOIN tbl_gruppe g ON d.id_dur_tbl_gru_fk = g.id_gru
         WHERE d.id_tbl_bew_fk = ?
         ORDER BY d.dur_zeit ASC
     `, [bewerbID]);
@@ -81,12 +90,17 @@ export async function getMitglieder(id_mit) {
 }
 
 export function formatDate(dateString) {
+    console.log(dateString);
     const date = new Date(dateString);
     const day = date.getDate();
+    
     const month = date.getMonth() + 1; // Months are zero-based
     const year = date.getFullYear();
     const hours = date.getHours();
+    let hours_pad = String(hours).padStart(2, '0');
     const minutes = date.getMinutes();
+    let minutes_pad = String(minutes).padStart(2, '0');
 
-    return `${day}.${month}.${year}, ${hours}:${minutes}`;
+    return `${day}.${month}.${year}, ${hours_pad}:${minutes_pad}`;
 }
+

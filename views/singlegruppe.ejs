@@ -5,24 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/reset.css">
     <title>Gruppen Details</title>
 
 </head>
 
 <body>
-    <h1>Gruppenmitglieder</h1>
+    <header>
+        <h1>FLA-Timer</h1>
+        <h2><a href="/bewerbe">Bewerbsübersicht</a></h2>
+        <h1>Gruppenmitglieder</h1>
+    </header>
+
 
     <div class="scrollable-container">
         <% mitglieder.forEach(mitglied=> { %>
             <div class="bewerb-container">
-            <p>
-                <%= mitglied.mit_name %>
+                <p>
+                    <%= mitglied.mit_name %>
 
 
-                <%= mitglied.mit_nachname %>
+                        <%= mitglied.mit_nachname %>
 
-                       
-            </p>
-            <% }); %>
-        </div>
+
+                </p>
+                <% }); %>
+            </div>
     </div>
+
+    <footer>
+        <p>2024 Thomas & Nomo</p>
+    </footer>
+</body>

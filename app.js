@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 //using database
 import { getBewerbe, getBewerb, createBewerb, getMitglieder } from './database.mjs'
 import { formatDate } from './database.mjs'
-import { getGruppen, createGruppen,getdruchlaufe } from './database.mjs'
+import { getGruppen, createGruppen, getdruchlaufe } from './database.mjs'
 //import { getMitglieder } from './database.mjs'
 app.set("view engine", "ejs");
 
@@ -51,7 +51,7 @@ app.get("/bewerbe/:id", async (req, res) => {
     };
     const gruppen = await getGruppen();
     const durchlaufe = await getdruchlaufe(bew_id);
-    if(!durchlaufe){
+    if (!durchlaufe) {
         alert("Noch keine Durchläufe vorhanden")
         res.redirect("/bewerbe")
     }
@@ -61,12 +61,13 @@ app.get("/bewerbe/:id", async (req, res) => {
         durchlaufe
     });
 })
+
 //creating a new bewerb
 app.post("/bewerbe", async (req, res) => {
-    const { bew_name, bew_art, bew_wetter } = req.body;
-    const bewerb = await createBewerb(bew_name, bew_art, bew_wetter);
+    const { bew_name, bew_art, bew_wetter,bew_datum } = req.body;
+    const bewerb = await createBewerb(bew_name, bew_art, bew_wetter, bew_datum);
     res.status(201).send({ message: "Bewerb created successfully" });
-    
+
 })
 app.post("/bewerbe/gruppen", async (req, res) => {
     const { gru_feuerwehr, gru_name, gru_alterspunkte } = req.body;

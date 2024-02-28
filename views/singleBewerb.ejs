@@ -5,13 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/reset.css">
     <title>All Notes</title>
 </head>
 
 <body>
-    <h1>
-        Durchläufe
-    </h1>
+    <header>
+        <h1>FLA-Timer</h1>
+        <h2><a href="/bewerbe">Bewerbsübersicht</a></h2>
+        <h1>Durchläufe</h1>
+    </header>
     <div class="container">
         <table>
             <thead>
@@ -60,26 +63,29 @@
                     <%= formattedBewerb.bew_datum_formatted%>
                 </li>
                 <li>
-                    Bewerbsart: 
+                    Bewerbsart:
                     <%= formattedBewerb.bew_art%>
                 </li>
                 <li>
-                    Wetter: 
+                    Wetter:
                     <%= formattedBewerb.bew_wetter%>
                 </li>
             </ul>
         </div>
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
+            document.addEventListener("DOMContentLoaded", function () {
                 const tbody = document.querySelector("tbody");
-        
+
                 if (tbody.innerHTML.trim() === "") {
-                   
+
                     alert("Noch keine Durchläufe vorhanden. Bitte füge welche hinzu.");
                 }
             });
         </script>
     </div>
+    <footer>
+        <p>2024 Thomas & Nomo</p>
+    </footer>
 </body>
 
 </html>
