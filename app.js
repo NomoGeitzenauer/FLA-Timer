@@ -51,7 +51,8 @@ app.get("/bewerbe/:id", async (req, res) => {
         bew_wetter: bewerb.bew_wetter,
         bew_name: bewerb.bew_name
     };
-    const gruppen = await getGruppenByBewerbId(bew_id);
+    const gruppen = await getGruppen();
+    const durchlaufgruppen = await getGruppenByBewerbId(bew_id);
     const durchlaufe = await getdruchlaufe(bew_id);
     if (!durchlaufe) {
         alert("Noch keine Durchläufe vorhanden")
@@ -60,7 +61,8 @@ app.get("/bewerbe/:id", async (req, res) => {
     res.render("singleBewerb.ejs", {
         formattedBewerb,
         gruppen,
-        durchlaufe
+        durchlaufe,
+        durchlaufgruppen
     });
 })
 
@@ -77,6 +79,13 @@ app.post("/bewerbe/gruppen", async (req, res) => {
     const gruppen = await createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte);
     res.status(201).send({ message: "Gruppen created successfully" });
 });
+
+ app.post("/bewerbe/durchlauf", async (req, res) => {
+     const {dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte } = req.body;
+     console.log(req.body);
+     const durchlaufe = await createDurchlauf(dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte);
+     res.status(201).send({ message: "Durchlauf created successfully" });
+ });
 
 app.get('/', (req, res, next) => {
     res.redirect('/bewerbe');

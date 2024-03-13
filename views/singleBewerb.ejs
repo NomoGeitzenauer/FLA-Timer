@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/reset.css">
-    <title>All Notes</title>
+    <title>Durchläufe</title>
 </head>
 
 <body>
@@ -53,6 +53,27 @@
             </tbody>
         </table>
 
+        <button id="toggleFormBtn">Durchlauf erstellen</button>
+        <div id="durchlaufFormContainer" style="display: none;">
+            <form id="durchlaufForm">
+                <select id="gruppenname" name="gruppenname" required>
+                    <% gruppen.forEach(function(gruppe) { %>
+                        <option value="<%= gruppe.gru_name %>"><%= gruppe.gru_feuerwehr %> - <%= gruppe.gru_name %></option>
+                    <% }); %>
+                </select><br>
+                <label for="bewerbsbahn">Bewerbsbahn:</label>
+                <input type="text" id="bewerbsbahn" name="bewerbsbahn" required><br>
+                <label for="zeit">Zeit:</label>
+                <input type="text" id="zeit" name="zeit" required><br>
+                <label for="fehler">Fehler-Ges.:</label>
+                <input type="text" id="fehler" name="fehler" required><br>
+                <label for="punkte">Punkte:</label>
+                <input type="text" id="punkte" name="punkte" required><br>
+                <button type="submit">Durchlauf erstellen</button>
+            </form>
+        </div>
+        
+
         <div class="bewerbDetails">
             <h2 class="bewerbDetails">Bewerbsdetails</h2>
             <ul>
@@ -72,30 +93,35 @@
                 </li>
             </ul>
         </div>
+
         <h2>Teilnehmende Gruppen</h2>
         <div class="scrollable-container">
             <% gruppen.forEach(gruppe=> { %>
                 <div class="bewerb-container">
                     <p>
                         <%= gruppe.gru_feuerwehr %>
-    
-    
+
+
                             <%= gruppe.gru_name %>
-    
+
                                 <a href="/bewerbe/gruppen/<%=gruppe.id_gru%>"> --></a>
                     </p>
                     <% }); %>
                 </div>
         </div>
+
+        
+
+
         <div class="formhs">
-            <form id="gruppeForm" method="post">
+            <form id="gruppenForm" method="post">
                 <label for="gru_feuerwehr">Feuerwehr:</label>
                 <input type="text" id="gru_feuerwehr" name="gru_feuerwehr" required><br>
                 <label for="gru_name">Gruppenname:</label>
                 <input type="text" id="gru_name" name="gru_name" required><br>
                 <label for="gru_alterspunkte">Gruppen-Alterspunkte:</label>
                 <input type="number" id="gru_alterspunkte" name="gru_alterspunkte" required>
-                <button type="submit" >Gruppe erstellen</button>
+                <button type="submit">Gruppe erstellen</button>
             </form>
         </div>
         <script>
@@ -108,35 +134,80 @@
                 }
             });
 
-            document.getElementById("bewerbForm").addEventListener("submit", async (event) => {
-            event.preventDefault(); // Prevent default form submission behavior
+            document.getElementById("gruppenForm").addEventListener("submit", async (event) => {
 
-            const formData = new FormData(document.getElementById("bewerbForm"));
+                event.preventDefault(); // Prevent default form submission behavior
+                console.log("gruppeSubmitted")
 
-            const bewerbData = {};
-            for (const [key, value] of formData.entries()) {
-                bewerbData[key] = value;
-            }
+                const formData = new FormData(document.getElementById("gruppenForm"));
 
-            try {
-                const response = await fetch("/bewerbe/gruppen", {
+                const gruppenData = {};
+                for (const [key, value] of formData.entries()) {
+                    gruppenData[key] = value;
+                }
+
+                try {
+                    const response = await fetch("/bewerbe/gruppen", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json" // Set Content-Type to JSON
+                        },
+                        body: JSON.stringify(gruppenData) // Serialize form data as JSON
+                    });
+                    if (response.ok) {
+                        alert("gruppe erstellt");
+                        window.location.reload();
+                    }
+                    else {
+                        alert("Fehler beim Erstellen des Bewerbs");
+                    }
+                } catch (error) {
+                    console.error('fetch /bewerb error:', error);
+                }
+            });
+
+
+
+            document.getElementById("toggleFormBtn").addEventListener("click", function () {
+                const formContainer = document.getElementById("durchlaufFormContainer");
+                if (formContainer.style.display === "none") {
+                    formContainer.style.display = "block";
+                } else {
+                    formContainer.style.display = "none";
+                }
+            });
+
+            document.getElementById("durchlaufForm").addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevent default form submission behavior
+
+                const formData = new FormData(document.getElementById("durchlaufForm"));
+
+                const durchlaufData = {};
+                formData.forEach((value, key) => {
+                    durchlaufData[key] = value;
+                });
+
+                fetch("/bewerbe/durchlauf", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json" // Set Content-Type to JSON
+                        "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(bewerbData) // Serialize form data as JSON
-                });
-                if (response.ok) {
-                    alert("Bewerb erstellt");
-                    window.location.reload();
-                }
-                else {
-                    alert("Fehler beim Erstellen des Bewerbs");
-                }
-            } catch (error) {
-                console.error('fetch /bewerb error:', error);
-            }
-        });
+                    body: JSON.stringify(durchlaufData)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Durchlauf erstellt erfolgreich");
+                            window.location.reload(); // Refresh the page
+                        } else {
+                            throw new Error("Fehler beim Erstellen des Durchlaufs");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Fehler beim Erstellen des Durchlaufs");
+                    });
+            });
+
         </script>
     </div>
     <footer>

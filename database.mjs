@@ -90,6 +90,11 @@ export async function getdruchlaufe(bewerbID) {
     return rows;
 }
 
+// export async function createDurchlauf(dur_gruppe)
+// SELECT id_gru
+// FROM tbl_gruppe
+// WHERE gruppenname = 'your_gruppenname';
+
 export async function getMitglieder(id_mit) {
     const [rows] = await pool.query(`
     SELECT *
