@@ -12,9 +12,8 @@
 
 <body>
     <header>
-        <h1>FLA-Timer</h1>
-        <h2><a href="/bewerbe">Bewerbsübersicht</a></h2>
-        <h3>Bewerbe</h3>
+        <h1><a href="/bewerbe">FLA-Timer</a></h1>
+        <h3>Bewerb Erstellen</h3>
     </header>
 
     <main>
@@ -49,15 +48,19 @@
             <button class="full-width" type="submit">Bewerb erstellen</button>
         </form>
 
-        <p class="center">Angelegte Bewerbe:</p>
+        <p class="center">Angelegte Bewerbe</p>
 
         <div class="scrollable-container">
             <% bewerbe.forEach(bewerb=> { %>
-                <a href="/bewerbe/<%=bewerb.id_bew%>">
-                    <%= bewerb.bew_name %>
-                        <%= bewerb.bew_datum_formatted %>
-                </a>
-                <button data-index="<%=bewerb.id_bew%>" type="button" id="deleteBewerb">X</button>
+                <div class="bewerb-link">
+
+                    <a href="/bewerbe/<%=bewerb.id_bew%>">
+                        <%= bewerb.bew_name %>
+                            <%= bewerb.bew_datum_formatted %>
+                    </a>
+                    <button data-index="<%=bewerb.id_bew%>" type="button" class="delete-button"><abbr
+                            title="Bewerb Löschen">X</abbr></button>
+                </div>
                 <% }); %>
         </div>
     </main>
@@ -68,7 +71,7 @@
     <script>
         // import { deleteBewerb } from './database.mjs';
 
-        buttons = document.querySelectorAll('#deleteBewerb');
+        buttons = document.querySelectorAll('.delete-button');
         buttons.forEach(item => {
             item.addEventListener("click", event => {
                 const bewerbId = event.target.dataset.index;

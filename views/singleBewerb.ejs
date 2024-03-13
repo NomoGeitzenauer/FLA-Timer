@@ -72,6 +72,32 @@
                 </li>
             </ul>
         </div>
+        <h2>Teilnehmende Gruppen</h2>
+        <div class="scrollable-container">
+            <% gruppen.forEach(gruppe=> { %>
+                <div class="bewerb-container">
+                    <p>
+                        <%= gruppe.gru_feuerwehr %>
+    
+    
+                            <%= gruppe.gru_name %>
+    
+                                <a href="/bewerbe/gruppen/<%=gruppe.id_gru%>"> --></a>
+                    </p>
+                    <% }); %>
+                </div>
+        </div>
+        <div class="formhs">
+            <form id="gruppeForm" method="post">
+                <label for="gru_feuerwehr">Feuerwehr:</label>
+                <input type="text" id="gru_feuerwehr" name="gru_feuerwehr" required><br>
+                <label for="gru_name">Gruppenname:</label>
+                <input type="text" id="gru_name" name="gru_name" required><br>
+                <label for="gru_alterspunkte">Gruppen-Alterspunkte:</label>
+                <input type="number" id="gru_alterspunkte" name="gru_alterspunkte" required>
+                <button type="submit" >Gruppe erstellen</button>
+            </form>
+        </div>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const tbody = document.querySelector("tbody");
@@ -81,6 +107,36 @@
                     alert("Noch keine Durchläufe vorhanden. Bitte füge welche hinzu.");
                 }
             });
+
+            document.getElementById("bewerbForm").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevent default form submission behavior
+
+            const formData = new FormData(document.getElementById("bewerbForm"));
+
+            const bewerbData = {};
+            for (const [key, value] of formData.entries()) {
+                bewerbData[key] = value;
+            }
+
+            try {
+                const response = await fetch("/bewerbe/gruppen", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json" // Set Content-Type to JSON
+                    },
+                    body: JSON.stringify(bewerbData) // Serialize form data as JSON
+                });
+                if (response.ok) {
+                    alert("Bewerb erstellt");
+                    window.location.reload();
+                }
+                else {
+                    alert("Fehler beim Erstellen des Bewerbs");
+                }
+            } catch (error) {
+                console.error('fetch /bewerb error:', error);
+            }
+        });
         </script>
     </div>
     <footer>

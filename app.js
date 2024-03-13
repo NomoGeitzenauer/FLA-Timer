@@ -4,7 +4,7 @@ const app = express()
 //using body-parser
 import bodyParser from 'body-parser';
 //using database
-import { getBewerbe, getBewerb, createBewerb, getMitglieder } from './database.mjs'
+import { getBewerbe, getBewerb, createBewerb, getMitglieder, getGruppenByBewerbId } from './database.mjs'
 import { formatDate } from './database.mjs'
 import { getGruppen, createGruppen, getdruchlaufe } from './database.mjs'
 //import { getMitglieder } from './database.mjs'
@@ -36,6 +36,8 @@ app.get("/bewerbe/gruppen/:id", async (req, res) => {
     res.render("singlegruppe.ejs", { mitglieder });
 });
 
+
+
 app.get("/bewerbe/:id", async (req, res) => {
     const bew_id = req.params.id;
     const bewerb = await getBewerb(bew_id);
@@ -49,7 +51,7 @@ app.get("/bewerbe/:id", async (req, res) => {
         bew_wetter: bewerb.bew_wetter,
         bew_name: bewerb.bew_name
     };
-    const gruppen = await getGruppen();
+    const gruppen = await getGruppenByBewerbId(bew_id);
     const durchlaufe = await getdruchlaufe(bew_id);
     if (!durchlaufe) {
         alert("Noch keine Durchläufe vorhanden")
@@ -77,14 +79,13 @@ app.post("/bewerbe/gruppen", async (req, res) => {
 });
 
 
+app.get('/', (req, res, next) => {
+    res.redirect('/bewerbe');
+});
 
 app.use(express.static('public'));
 
-app.use(function (err, req, res, next) {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-});
-
-app.listen(8080, () => {
-    console.log('Server started on http://localhost:8080');
+const HOSTNAME='pi-thomas.local'
+app.listen(80,HOSTNAME, () => {
+    console.log('Server started on http://localhost:80');
 })

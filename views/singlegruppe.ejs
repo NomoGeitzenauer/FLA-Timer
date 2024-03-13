@@ -19,19 +19,33 @@
 
 
     <div class="scrollable-container">
-        <% mitglieder.forEach(mitglied=> { %>
-            <div class="bewerb-container">
-                <p>
-                    <%= mitglied.mit_name %>
-
-
-                        <%= mitglied.mit_nachname %>
-
-
-                </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th> <!-- Additional column for incrementing counter -->
+                    <th>Name</th>
+                    <th>Nachname</th>
+                    <th>Geschlecht</th>
+                    <th>Funktion</th>
+                    <th>Dienstgrad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% let counter = 1; %> <!-- Initialize counter variable -->
+                <% mitglieder.forEach(mitglied => { %>
+                    <tr>
+                        <td><%= counter %></td> <!-- Display counter value -->
+                        <td><%= mitglied.mit_name %></td>
+                        <td><%= mitglied.mit_nachname %></td>
+                        <td><%= mitglied.mit_geschlecht %></td>
+                        <td><%= mitglied.mit_funktion %></td>
+                        <td><%= mitglied.mit_dienstgrad %></td>
+                    </tr>
+                    <% counter++; %> <!-- Increment counter for next iteration -->
                 <% }); %>
-            </div>
-    </div>
+            </tbody>
+        </table>
+        
 
     <footer>
         <p>2024 Thomas & Nomo</p>

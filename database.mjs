@@ -57,6 +57,18 @@ export async function getGruppe(id_gru) {
     return rows[0];
 }
 
+export async function getGruppenByBewerbId(id_bew) {
+    // Fetching group information from tbl_gruppe based on id_bew
+    const [gruppenRows] = await pool.query(`
+        SELECT g.*
+        FROM tbl_gruppe g
+        JOIN tbl_durchlauf d ON g.id_gru = d.id_dur_tbl_gru_fk
+        WHERE d.id_tbl_bew_fk = ?
+    `, [id_bew]);
+
+    return gruppenRows;
+}
+
 export async function createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte) {
     const result = await pool.query(`
     INSERT INTO tbl_gruppe (gru_name, gru_feuerwehr, gru_alterspunkte)
