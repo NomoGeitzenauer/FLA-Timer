@@ -78,7 +78,6 @@ app.post("/bewerbe/gruppen", async (req, res) => {
     res.status(201).send({ message: "Gruppen created successfully" });
 });
 
-
 app.get('/', (req, res, next) => {
     res.redirect('/bewerbe');
 });
