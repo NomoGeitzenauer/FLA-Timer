@@ -4,7 +4,7 @@ const app = express()
 //using body-parser
 import bodyParser from 'body-parser';
 //using database
-import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler } from './database.mjs'
+import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler } from './database.mjs'
 import { formatDate,deleteFehlerEintrag } from './database.mjs'
 import { getGruppen, createGruppen, getdruchlaufe } from './database.mjs'
 import moment from 'moment';
@@ -38,7 +38,7 @@ app.get("/bewerbe/gruppen/:id", async (req, res) => {
 });
 
 
-
+//all durchlaufe of a bewerb
 app.get("/bewerbe/:id/durchlaufe", async (req, res) => {
     const bew_id = req.params.id;
     const bewerb = await getBewerb(bew_id);
@@ -70,6 +70,7 @@ app.get("/bewerbe/:id/durchlaufe", async (req, res) => {
     });
 })
 
+//single Durchlauf
 app.get("/bewerbe/:id/durchlaufe/:id2", async (req, res) => {
     const bew_id = req.params.id;
     const dur_id = req.params.id2;
@@ -91,6 +92,7 @@ app.get("/bewerbe/:id/durchlaufe/:id2", async (req, res) => {
 }
 )
 
+//creating a new fehler
 app.post("/bewerbe/:id/durchlaufe/:id2/fehlerEintrag", async (req, res) => {
     const { fehlerId, mitgliedId } = req.body; // Make sure to use the correct property names
     console.log(req.body);
@@ -99,6 +101,7 @@ app.post("/bewerbe/:id/durchlaufe/:id2/fehlerEintrag", async (req, res) => {
     res.status(201).send({ message: "Fehler created successfully" });
 });
 
+//deleting a fehler
 app.post("/bewerbe/:id/durchlaufe/:id2/deletefehlerEintrag/:id3", async (req, res) => {
     console.log(req.body);
     const fehlerID = req.params.id3;
@@ -124,6 +127,8 @@ app.post("/deleteBewerb/:id", async (req, res) => {
     console.log("Bewerb wirklich gelöscht");
     res.status(200).send({ message: "Bewerb deleted successfully" });
 })
+
+//creating a new gruppe
 app.post("/bewerbe/gruppen", async (req, res) => {
     const { gru_feuerwehr, gru_name, gru_alterspunkte } = req.body;
     console.log(req.body);
@@ -131,12 +136,7 @@ app.post("/bewerbe/gruppen", async (req, res) => {
     res.status(201).send({ message: "Gruppen created successfully" });
 });
 
-app.post("/bewerbe/durchlauf", async (req, res) => {
-    const { dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte } = req.body;
-    console.log(req.body);
-    const durchlaufe = await createDurchlauf(dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte);
-    res.status(201).send({ message: "Durchlauf created successfully" });
-});
+//creating a new durchlauf
 app.post("/bewerbe/durchlauf", async (req, res) => {
     const { dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte } = req.body;
     console.log(req.body);
@@ -150,11 +150,9 @@ app.get('/', (req, res, next) => {
 
 app.use(express.static('public'));
 
-const HOSTNAME = 'pi-thomas.local'
-app.listen(80, HOSTNAME, () => {
+
 const HOSTNAME = 'pi-thomas.local'
 app.listen(80, HOSTNAME, () => {
     console.log('Server started on http://localhost:80');
 })
-}
-)
+
