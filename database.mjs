@@ -113,7 +113,7 @@ export async function getGruppeByDurchlauf(id_dur) {
 export async function getFehler() {
     const [rows] = await pool.query("SELECT * FROM `tbl_fehler`");
     return rows;
-
+}
 export async function createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte) {
     const result = await pool.query(`
     INSERT INTO tbl_gruppe (gru_name, gru_feuerwehr, gru_alterspunkte)
