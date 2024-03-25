@@ -4,7 +4,7 @@ const app = express()
 //using body-parser
 import bodyParser from 'body-parser';
 //using database
-import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler } from './database.mjs'
+import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler } from './database.mjs'
 import { formatDate,deleteFehlerEintrag } from './database.mjs'
 import { getGruppen, createGruppen, getdruchlaufe } from './database.mjs'
 import moment from 'moment';
@@ -63,6 +63,8 @@ app.get("/bewerbe/:id/durchlaufe", async (req, res) => {
         formattedBewerb,
         gruppen,
         durchlaufe,
+        durchlaufgruppen,
+        bew_id,
         durchlaufgruppen,
         bew_id
     });
@@ -135,6 +137,12 @@ app.post("/bewerbe/durchlauf", async (req, res) => {
     const durchlaufe = await createDurchlauf(dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte);
     res.status(201).send({ message: "Durchlauf created successfully" });
 });
+app.post("/bewerbe/durchlauf", async (req, res) => {
+    const { dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte } = req.body;
+    console.log(req.body);
+    const durchlaufe = await createDurchlauf(dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte);
+    res.status(201).send({ message: "Durchlauf created successfully" });
+});
 
 app.get('/', (req, res, next) => {
     res.redirect('/bewerbe');
@@ -144,5 +152,9 @@ app.use(express.static('public'));
 
 const HOSTNAME = 'pi-thomas.local'
 app.listen(80, HOSTNAME, () => {
+const HOSTNAME = 'pi-thomas.local'
+app.listen(80, HOSTNAME, () => {
     console.log('Server started on http://localhost:80');
 })
+}
+)

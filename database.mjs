@@ -79,10 +79,40 @@ export async function getGruppeByDurchlauf(id_dur) {
     return rows[0];
 }
 
+export async function getFehler()
+{
+    const [rows] = await pool.query("SELECT * FROM `tbl_fehler`");
+    return rows;    
+}
+
+export async function getGruppeByDurchlauf(id_dur) {
+    const [rows] = await pool.query(`
+        SELECT g.*
+        FROM tbl_gruppe g
+        JOIN tbl_durchlauf d ON g.id_gru = d.id_dur_tbl_gru_fk
+        WHERE d.id_dur = ?
+    `, [id_dur]);
+    return rows[0];
+}
+
 export async function getFehler() {
     const [rows] = await pool.query("SELECT * FROM `tbl_fehler`");
     return rows;
 }
+
+export async function getGruppeByDurchlauf(id_dur) {
+    const [rows] = await pool.query(`
+        SELECT g.*
+        FROM tbl_gruppe g
+        JOIN tbl_durchlauf d ON g.id_gru = d.id_dur_tbl_gru_fk
+        WHERE d.id_dur = ?
+    `, [id_dur]);
+    return rows[0];
+}
+
+export async function getFehler() {
+    const [rows] = await pool.query("SELECT * FROM `tbl_fehler`");
+    return rows;
 
 export async function createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte) {
     const result = await pool.query(`
