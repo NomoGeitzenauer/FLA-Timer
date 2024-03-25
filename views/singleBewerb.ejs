@@ -48,6 +48,9 @@
                         <td>
                             <%= durchlauf.dur_punkte%>
                         </td>
+                        <td>
+                            <a href="/bewerbe/<%=bew_id%>/durchlaufe/<%=durchlauf.id_dur%>">--></a>
+                        </td>
                     </tr>
                     <% }); %>
             </tbody>
@@ -112,8 +115,8 @@
 
         
 
-
-        <div class="formhs">
+        <button id="toggleGruppeBtn">Gruppe erstellen</button>
+        <div id="gruppenFormContainer" style="display: none;">
             <form id="gruppenForm" method="post">
                 <label for="gru_feuerwehr">Feuerwehr:</label>
                 <input type="text" id="gru_feuerwehr" name="gru_feuerwehr" required><br>
@@ -170,6 +173,15 @@
 
             document.getElementById("toggleFormBtn").addEventListener("click", function () {
                 const formContainer = document.getElementById("durchlaufFormContainer");
+                if (formContainer.style.display === "none") {
+                    formContainer.style.display = "block";
+                } else {
+                    formContainer.style.display = "none";
+                }
+            });
+
+            document.getElementById("toggleGruppeBtn").addEventListener("click", function () {
+                const formContainer = document.getElementById("gruppenFormContainer");
                 if (formContainer.style.display === "none") {
                     formContainer.style.display = "block";
                 } else {

@@ -27,16 +27,16 @@
             <label for="bew_art">Bewerbsart:</label>
             <div class="weather-selector">
                 <span>
-                    <input type="radio" name="bew_art" id="1">
-                    <label for="1">Sonne</label>
+                    <input type="radio" name="bew_art" id="bew_art_sonne" value="1">
+                    <label for="bew_art_sonne">Sonne</label>
                 </span>
                 <span>
-                    <input type="radio" name="bew_art" id="2">
-                    <label for="2">Regen</label>
+                    <input type="radio" name="bew_art" id="bew_art_regen" value="2">
+                    <label for="bew_art_regen">Regen</label>
                 </span>
                 <span>
-                    <input type="radio" name="bew_art" id="3">
-                    <label for="3">Gewitter</label>
+                    <input type="radio" name="bew_art" id="bew_art_gewitter" value="3">
+                    <label for="bew_art_gewitter">Gewitter</label>
                 </span>
             </div>
             <!-- <input type="number" id="bew_art" name="bew_art" required>
@@ -54,12 +54,11 @@
             <% bewerbe.forEach(bewerb=> { %>
                 <div class="bewerb-link">
 
-                    <a href="/bewerbe/<%=bewerb.id_bew%>">
+                    <a href="/bewerbe/<%=bewerb.id_bew%>/durchlaufe">
                         <%= bewerb.bew_name %>
                             <%= bewerb.bew_datum_formatted %>
                     </a>
-                    <button data-index="<%=bewerb.id_bew%>" type="button" class="delete-button"><abbr
-                            title="Bewerb Löschen">X</abbr></button>
+                    <button data-index="<%=bewerb.id_bew%>" type="button" class="delete-button"> X</button> //abbr hat probleme gemacht, man hat den outer rim clicken müssen
                 </div>
                 <% }); %>
         </div>
@@ -69,17 +68,38 @@
         <p>2024 Thomas & Nomo</p>
     </footer>
     <script>
-        // import { deleteBewerb } from './database.mjs';
 
-        buttons = document.querySelectorAll('.delete-button');
-        buttons.forEach(item => {
-            item.addEventListener("click", event => {
-                const bewerbId = event.target.dataset.index;
+        document.querySelector('main').addEventListener('click', async function (event) {
+            console.log('Click event triggered');
+            if (event.target.classList.contains('delete-button')) {
+                const bewerbId = event.target.dataset.index; // Use event.target instead of event.currentTarget
                 console.log(bewerbId);
-                deleteBewerb(bewerbId);
-            })
-        });
 
+                try {
+                    const response = await fetch(`/deleteBewerb/${bewerbId}`, {
+                        method: 'POST', // Change method to POST
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ bewerbId: bewerbId }) // Include bewerbId in the request body
+                    });
+                    console.log('delete sent');
+
+                    if (response.ok) {
+                        // Delete operation successful, remove the corresponding element from the DOM
+                        event.target.closest('.bewerb-link').remove();
+                        alert("Bewerb gelöscht");
+                        window.location.reload();
+                    } else {
+                        // Handle errors
+                        console.error('Failed to delete Bewerb');
+                    }
+                } catch (error) {
+                    // Handle network errors
+                    console.error('Network error:', error);
+                }
+            }
+        });
         document.getElementById("bewerbForm").addEventListener("submit", async (event) => {
             event.preventDefault(); // Prevent default form submission behavior
 

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/reset.css">
+    <title>Durchlauf</title>
+</head>
+
+<body>
+
+    <h1>
+        <%= durchlauf.dur_name %>
+    </h1>
+
+    <h2>Durchlauf der Gruppe <%= durchlaufgruppe.gru_name %>
+    </h2>
+
+    <a href="/bewerbe/<%= bew_id %>/durchlaufe/">zurück</a>
+
+    <form id="errorForm">
+        <% fehler.forEach((fehlerItem, index)=> { %>
+            <label for="gruppenMitglied<%= index + 1 %>">
+                <%= fehlerItem.feh_name %> Fehler:
+            </label>
+            <select id="gruppenMitglied<%= index + 1 %>" name="gruppenMitglied<%= index + 1 %>">
+                <% mitglieder.forEach(mitglied=> { %>
+                    <option value="<%= mitglied.id_mit %>">
+                        <%= mitglied.mit_name %>
+                    </option>
+                    <% }); %>
+            </select>
+            <button type="button"
+                onclick="submitErrorAndMember('<%= fehlerItem.id_feh %>', document.getElementById('gruppenMitglied<%= index + 1 %>').value)">Submit</button>
+            <br>
+
+
+            <% }); %>
+    </form>
+
+    <ul>
+        <% durchlauffehler.forEach(durfehler=> { %>
+            <li>
+                <%= durfehler.feh_name%>
+                    <%=durfehler.mit_name%>
+                        <button data-index="<%=durfehler['id_feh-li']%>" type="button" class="delete-button">X</button>
+            </li>
+            <% }); %>
+    </ul>
+
+    </ul>
+
+    <script>
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.addEventListener('click', function () {
+                console.log('delete button clicked');
+                const fehlerLinkId = event.target.dataset.index;
+                const durchlaufID = '<%= dur_id %>';
+                const bewerbID = '<%= bew_id %>';
+                fetch(`/bewerbe/${bewerbID}/durchlaufe/${durchlaufID}/deletefehlerEintrag/${fehlerLinkId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ fehlerLinkId: fehlerLinkId })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Fehler link deleted successfully');
+                            window.location.reload();
+                            // You can add further actions here if needed
+                        } else {
+                            console.error('Failed to delete fehler link');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+
+        function submitErrorAndMember(fehlerId, gruppenMitgliedId) {
+            const fehler = fehlerId;
+            const gruppenMitglied = gruppenMitgliedId;
+            const durchlaufID = '<%= dur_id %>';
+            const bewerbID = '<%= bew_id %>';
+            fetch(`/bewerbe/${bewerbID}/durchlaufe/${durchlaufID}/fehlerEintrag`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fehlerId: fehler,
+                    mitgliedId: gruppenMitglied
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Error submitted successfully');
+                        window.location.reload();
+                        // You can add further actions here if needed
+                    } else {
+                        console.error('Failed to submit error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            addErrorEntry(document.getElementById(`gruppenMitglied${index + 1}`).value, fehlerName);
+        }
+
+
+    </script>
+
+</body>
+
+</html>

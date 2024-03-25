@@ -24,12 +24,12 @@ export async function getBewerb(bew_id) {
     return rows[0];
 }
 
-export async function createBewerb(bew_name, bew_art, bew_wetter,bew_datum) {
+export async function createBewerb(bew_name, bew_art, bew_wetter, bew_datum) {
     const result = await pool.query(`
     INSERT INTO tbl_bewerb (bew_name, bew_art, bew_wetter,bew_datum)
     VALUES (?, ?, ?, ?)
-    `, [bew_name, bew_art, bew_wetter,bew_datum]);
-    
+    `, [bew_name, bew_art, bew_wetter, bew_datum]);
+
     const bew_id = result[0].insertId
     return getBewerb(bew_id);
 
@@ -69,6 +69,21 @@ export async function getGruppenByBewerbId(id_bew) {
     return gruppenRows;
 }
 
+export async function getGruppeByDurchlauf(id_dur) {
+    const [rows] = await pool.query(`
+        SELECT g.*
+        FROM tbl_gruppe g
+        JOIN tbl_durchlauf d ON g.id_gru = d.id_dur_tbl_gru_fk
+        WHERE d.id_dur = ?
+    `, [id_dur]);
+    return rows[0];
+}
+
+export async function getFehler() {
+    const [rows] = await pool.query("SELECT * FROM `tbl_fehler`");
+    return rows;
+}
+
 export async function createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte) {
     const result = await pool.query(`
     INSERT INTO tbl_gruppe (gru_name, gru_feuerwehr, gru_alterspunkte)
@@ -90,6 +105,32 @@ export async function getdruchlaufe(bewerbID) {
     return rows;
 }
 
+export async function createFehlerEintrag(fehler, mitglied, durchlauf) {
+    const result = await pool.query(`
+    INSERT INTO \`tbl_fehler-link\` (id_tbl_fehler_fk, id_tbl_mitglied_fk, id_tbl_durchlauf_fk)
+    VALUES (?, ?, ?)
+    `, [fehler, mitglied, durchlauf]);
+    return result;
+}
+
+export async function deleteFehlerEintrag(fehlerID) {
+    await pool.query(`
+    DELETE FROM \`tbl_fehler-link\`
+    WHERE \`id_feh-li\` = ?
+    `, [fehlerID]);
+}
+
+export async function getdurchlaufFehler(dur_id) {
+    const [rows] = await pool.query(`
+    SELECT  fl.\`id_feh-li\`, f.feh_name, m.mit_name
+    FROM \`tbl_fehler-link\` fl
+    JOIN tbl_fehler f ON fl.id_tbl_fehler_fk = f.id_feh
+    JOIN tbl_mitglied m ON fl.id_tbl_mitglied_fk = m.id_mit
+    WHERE fl.id_tbl_durchlauf_fk = ?
+    `, [dur_id]);
+    return rows;
+}
+
 // export async function createDurchlauf(dur_gruppe)
 // SELECT id_gru
 // FROM tbl_gruppe
@@ -102,15 +143,15 @@ export async function getMitglieder(id_mit) {
      WHERE id_tbl_gru_fk = ?
      Order by mit_name
      `, [id_mit]);
-     
+
     return rows;
 }
 
 export function formatDate(dateString) {
-    console.log(dateString);
+    //console.log(dateString);
     const date = new Date(dateString);
     const day = date.getDate();
-    
+
     const month = date.getMonth() + 1; // Months are zero-based
     const year = date.getFullYear();
     const hours = date.getHours();
