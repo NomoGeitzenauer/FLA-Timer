@@ -128,8 +128,6 @@
                                     .then(response => {
                                         if (response.ok) {
                                             console.log('Total error count and total sum submitted successfully');
-                                            window.location.href = `/bewerbe/<%= bew_id %>/durchlaufe/`;
-
                                         } else {
                                             console.error('Failed to submit total error count and total sum');
                                         }

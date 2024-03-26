@@ -93,11 +93,12 @@
             </ul>
         </div>
 
-        <h2>Teilnehmende Gruppen</h2>
+        <h2>Bestehende Gruppen</h2>
         <div class="scrollable-container">
             <% gruppen.forEach(gruppe=> { %>
                 <div class="bewerb-container">
                     <p>
+                        <button data-index="<%=gruppe.id_gru%>" type="button" class="delete-gruppe">X</button>
                         <%= gruppe.gru_feuerwehr %>
 
 
@@ -109,22 +110,19 @@
                 </div>
         </div>
 
-
-
         <button id="toggleGruppeBtn">Gruppe erstellen</button>
         <div id="gruppenFormContainer" style="display: none;">
-            <form id="gruppenForm" method="post">
-                <label for="gru_feuerwehr">Feuerwehr:</label>
+            <form id="gruppeForm">
+                <label for="gru_feuerwehr">Gruppen Name:</label>
                 <input type="text" id="gru_feuerwehr" name="gru_feuerwehr" required><br>
-                <label for="gru_name">Gruppenname:</label>
+                <label for="gru_name">Gruppenname</label>
                 <input type="text" id="gru_name" name="gru_name" required><br>
-                <label for="gru_alterspunkte">Gruppen-Alterspunkte:</label>
+                <label for="gru_alterspunkte">Gruppen-Alterspunkte</label>
                 <input type="number" id="gru_alterspunkte" name="gru_alterspunkte" required>
                 <button type="submit">Gruppe erstellen</button>
             </form>
         </div>
 
-        <div id="errorMessage" style="display: none; color: red;"></div>
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -136,15 +134,39 @@
                 }
             });
 
-            if (mitglieder.length === 0) {
-    // Display error message
-    document.getElementById('errorMessage').innerText = 'Keine Mitglieder in der Gruppe, fügen Sie welche hinzu';
-    document.getElementById('errorMessage').style.display = 'block';
+            document.querySelectorAll('.delete-gruppe').forEach(button => {
+                button.addEventListener('click', function (event) { // Added event parameter
+                    console.log('Delete Gruppe clicked')
+                    const gruppeId = event.target.dataset.index;
+                    const url = `/bewerbe/<%= bew_id %>/gruppen/${gruppeId}/delete`;
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            gruppeId // Changed from gruppeID to gruppeId
+                        })
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                console.log('Gruppe deleted successfully');
+                                window.location.reload();
+                            } else {
+                                console.error('Failed to delete Gruppe');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            // Handle network error
+                        });
+                });
+            });
 
-    // Optionally, you can hide the form or other elements if needed
-    document.getElementById('durchlaufFormContainer').style.display = 'none';
-    // You can also handle other UI adjustments or actions here
-}
+
+
+
+
             document.getElementById('durchlaufForm').addEventListener('submit', function (event) {
                 event.preventDefault(); // Prevent default form submission
                 console.log("Durchlauf submitted")
@@ -169,6 +191,7 @@
                     .then(response => {
                         if (response.ok) {
                             console.log('Durchlauf started successfully');
+                            window.location.reload();
                         } else {
                             console.error('Failed to start Durchlauf');
                         }
@@ -178,41 +201,42 @@
                         // Handle network error
                     });
             });
+            document.getElementById('gruppeForm').addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
+                console.log("Gruppe submitted")
+                // Get selected group and bewerbsbahn
+                const gru_feuerwehr = document.getElementById('gru_feuerwehr').value;
+                const gru_name = document.getElementById('gru_name').value;
+                const gru_alterspunkte = document.getElementById('gru_alterspunkte').value;
 
-            document.getElementById("gruppenForm").addEventListener("submit", async (event) => {
+                // Construct the URL
+                const url = `/bewerbe/<%= bew_id %>/gruppen/erstellt`;
 
-                event.preventDefault(); // Prevent default form submission behavior
-                console.log("gruppeSubmitted")
+                // Construct the request body
+                const body = JSON.stringify({ gru_feuerwehr, gru_name, gru_alterspunkte });
 
-                const formData = new FormData(document.getElementById("gruppenForm"));
-
-                const gruppenData = {};
-                for (const [key, value] of formData.entries()) {
-                    gruppenData[key] = value;
-                }
-
-                try {
-                    const response = await fetch("/bewerbe/gruppen", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json" // Set Content-Type to JSON
-                        },
-                        body: JSON.stringify(gruppenData) // Serialize form data as JSON
+                // Make the POST request
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: body
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Gruppe created successfully');
+                            window.location.reload();
+                        } else {
+                            console.error('Failed to create Gruppe');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle network error
                     });
-                    if (response.ok) {
-                        alert("gruppe erstellt");
-                        window.location.reload();
-                    }
-                    else {
-                        alert("Fehler beim Erstellen des Bewerbs");
-                    }
-                } catch (error) {
-                    console.error('fetch /bewerb error:', error);
-                }
-            });
-
-
-
+            }
+            );
             document.getElementById("toggleFormBtn").addEventListener("click", function () {
                 const formContainer = document.getElementById("durchlaufFormContainer");
                 if (formContainer.style.display === "none") {
@@ -221,7 +245,6 @@
                     formContainer.style.display = "none";
                 }
             });
-
             document.getElementById("toggleGruppeBtn").addEventListener("click", function () {
                 const formContainer = document.getElementById("gruppenFormContainer");
                 if (formContainer.style.display === "none") {
@@ -230,7 +253,6 @@
                     formContainer.style.display = "none";
                 }
             });
-
 
         </script>
     </div>

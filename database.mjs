@@ -96,6 +96,14 @@ export async function createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte) {
     return getGruppe(gru_id);
 }
 
+export async function deleteGruppe(gru_id)
+{
+    await pool.query(`
+    DELETE FROM tbl_gruppe
+    WHERE id_gru = ?
+    `, [gru_id]);
+} 
+
 export async function getdruchlaufe(bewerbID) {
     const [rows] = await pool.query(`
         SELECT d.*, b.bew_name, g.gru_name, g.gru_feuerwehr

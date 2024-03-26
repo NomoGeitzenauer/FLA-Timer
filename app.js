@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 //using database
 import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler,getdurchlaufFehlerListe } from './database.mjs'
 import { formatDate,deleteFehlerEintrag } from './database.mjs'
-import { getGruppen, createGruppen, getdruchlaufe, createDurchlauf, completeDurchlauf,createMitglied,deleteMitglied} from './database.mjs'
+import { getGruppen, createGruppen,deleteGruppe, getdruchlaufe, createDurchlauf, completeDurchlauf,createMitglied,deleteMitglied} from './database.mjs'
 import moment from 'moment';
 //import { getMitglieder } from './database.mjs'
 app.set("view engine", "ejs");
@@ -118,6 +118,21 @@ app.post("/bewerbe/:id/durchlaufe/erstellt", async (req, res) => {
     const durchlauf = await createDurchlauf(bew_id, dur_gruppe, bewerbsbahn);
     res.status(201).send({ message: "Durchlauf created successfully" });
 });
+
+app.post("/bewerbe/:id/gruppen/erstellt", async (req, res) => {
+    const { gru_name, gru_feuerwehr, gru_alterspunkte } = req.body;
+    const gruppen = await createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte);
+    res.status(201).send({ message: "Gruppen created successfully" });
+});
+
+app.post(`/bewerbe/:id/gruppen/:id2/delete`, async (req, res) => {	
+    const gru_id = req.params.id2;	
+    const {gruppeId}=req.body;
+    const gruppe= gruppeId;
+    await deleteGruppe(gruppe);	
+    res.status(201).send({ message: "Gruppe deleted successfully" });	
+}
+);
 
 app.post("/bewerbe/:id/durchlaufe/:id2/completeDurchlauf", async (req, res) => {
     const dur_id = req.params.id2;
