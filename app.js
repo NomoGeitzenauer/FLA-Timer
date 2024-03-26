@@ -4,9 +4,9 @@ const app = express()
 //using body-parser
 import bodyParser from 'body-parser';
 //using database
-import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler } from './database.mjs'
+import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler,getdurchlaufFehlerListe } from './database.mjs'
 import { formatDate,deleteFehlerEintrag } from './database.mjs'
-import { getGruppen, createGruppen, getdruchlaufe } from './database.mjs'
+import { getGruppen, createGruppen, getdruchlaufe, createDurchlauf, completeDurchlauf,createMitglied,deleteMitglied} from './database.mjs'
 import moment from 'moment';
 //import { getMitglieder } from './database.mjs'
 app.set("view engine", "ejs");
@@ -34,9 +34,24 @@ app.get("/bewerbe/gruppen/:id", async (req, res) => {
         res.status(404).send("mitglieder not found");
         return;
     }
-    res.render("singlegruppe.ejs", { mitglieder });
+    res.render("singlegruppe.ejs", { mitglieder,gru_id });
 });
 
+app.post("/bewerbe/gruppen/:id", async (req, res) => {
+    const gru_id = req.params.id;
+    const { name, nachname, geschlecht, alter, funktion, dienstgrad } = req.body;
+    console.log(req.body);
+    const mitglied = await createMitglied(name, nachname, geschlecht, alter, funktion, dienstgrad, gru_id);
+    res.status(201).send({ message: "Mitglied created successfully" });
+});
+
+app.post(`/bewerbe/gruppen/:id/mitglieder/delete/:id2`, async (req, res) => {
+    const mit_id = req.params.id2;
+    const gru_id = req.params.id;
+    await deleteMitglied(mit_id,gru_id);
+    res.status(201).send({ message: "Mitglied deleted successfully" });
+}
+);
 
 //all durchlaufe of a bewerb
 app.get("/bewerbe/:id/durchlaufe", async (req, res) => {
@@ -64,8 +79,6 @@ app.get("/bewerbe/:id/durchlaufe", async (req, res) => {
         gruppen,
         durchlaufe,
         durchlaufgruppen,
-        bew_id,
-        durchlaufgruppen,
         bew_id
     });
 })
@@ -79,6 +92,8 @@ app.get("/bewerbe/:id/durchlaufe/:id2", async (req, res) => {
     const fehler = await getFehler();
     const mitglieder = await getMitglieder(durchlaufgruppe.id_gru);
     const durchlauffehler = await getdurchlaufFehler(dur_id);
+    const durchlauffehlerliste= await getdurchlaufFehlerListe(dur_id);
+    console.log(durchlauffehler);
     if (!bewerb) {
         res.status(404).send("Bewerb not found");
         return;
@@ -88,9 +103,32 @@ app.get("/bewerbe/:id/durchlaufe/:id2", async (req, res) => {
         res.status(404).send("Durchlauf not found");
         return;
     }
-    res.render("singleDurchlauf.ejs", { durchlauf, durchlaufgruppe, bew_id, fehler: fehler, mitglieder, dur_id, durchlauffehler});
+    if (mitglieder.length === 0) {
+        res.send("Keine Mitglieder in der Gruppe");
+        return;
+    }
+    res.render("singleDurchlauf.ejs", { durchlauf, durchlaufgruppe, bew_id, fehler: fehler, mitglieder, dur_id, durchlauffehler,durchlauffehlerliste});
 }
 )
+
+app.post("/bewerbe/:id/durchlaufe/erstellt", async (req, res) => {
+    const { gruppenname, bewerbsbahn } = req.body;
+    const bew_id = req.params.id;
+    const dur_gruppe = gruppenname; // Assuming gruppenname is the correct field name
+    const durchlauf = await createDurchlauf(bew_id, dur_gruppe, bewerbsbahn);
+    res.status(201).send({ message: "Durchlauf created successfully" });
+});
+
+app.post("/bewerbe/:id/durchlaufe/:id2/completeDurchlauf", async (req, res) => {
+    const dur_id = req.params.id2;
+    const { dur_fehlergesamt, dur_punkte } = req.body;
+    const fehlerges = dur_fehlergesamt;
+    console.log(fehlerges)
+    const punkte = dur_punkte;
+    await completeDurchlauf(dur_id,fehlerges,punkte);
+    res.status(201).send({ message: "Durchlauf completed successfully" });
+}
+);
 
 //creating a new fehler
 app.post("/bewerbe/:id/durchlaufe/:id2/fehlerEintrag", async (req, res) => {
@@ -136,13 +174,6 @@ app.post("/bewerbe/gruppen", async (req, res) => {
     res.status(201).send({ message: "Gruppen created successfully" });
 });
 
-//creating a new durchlauf
-app.post("/bewerbe/durchlauf", async (req, res) => {
-    const { dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte } = req.body;
-    console.log(req.body);
-    const durchlaufe = await createDurchlauf(dur_gruppe, dur_bewerbsbahn, dur_zeit, dur_fehlerges, dur_punkte);
-    res.status(201).send({ message: "Durchlauf created successfully" });
-});
 
 app.get('/', (req, res, next) => {
     res.redirect('/bewerbe');

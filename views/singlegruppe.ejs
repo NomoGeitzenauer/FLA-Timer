@@ -15,6 +15,7 @@
         <h1>FLA-Timer</h1>
         <h2><a href="/bewerbe">Bewerbsübersicht</a></h2>
         <h1>Gruppenmitglieder</h1>
+        <button id="goBackButton" type="button">Back</button>
     </header>
 
 
@@ -31,23 +32,115 @@
                 </tr>
             </thead>
             <tbody>
-                <% let counter = 1; %> <!-- Initialize counter variable -->
-                <% mitglieder.forEach(mitglied => { %>
-                    <tr>
-                        <td><%= counter %></td> <!-- Display counter value -->
-                        <td><%= mitglied.mit_name %></td>
-                        <td><%= mitglied.mit_nachname %></td>
-                        <td><%= mitglied.mit_geschlecht %></td>
-                        <td><%= mitglied.mit_funktion %></td>
-                        <td><%= mitglied.mit_dienstgrad %></td>
-                    </tr>
-                    <% counter++; %> <!-- Increment counter for next iteration -->
-                <% }); %>
+                <% let counter=1; %> <!-- Initialize counter variable -->
+                    <% mitglieder.forEach(mitglied=> { %>
+                        <tr>
+                            <td>
+                                <%= counter %>
+                            </td> <!-- Display counter value -->
+                            <td>
+                                <%= mitglied.mit_name %>
+                            </td>
+                            <td>
+                                <%= mitglied.mit_nachname %>
+                            </td>
+                            <td>
+                                <%= mitglied.mit_geschlecht %>
+                            </td>
+                            <td>
+                                <%= mitglied.mit_alter %>
+                            </td>
+                            <td>
+                                <%= mitglied.mit_funktion %>
+                            </td>
+                            <td>
+                                <%= mitglied.mit_dienstgrad %>
+                            </td>
+                            <td><button data-index="<%=mitglied.id_mit%>" type="button" class="delete-button">X</button>
+                            </td>
+                        </tr>
+                        <% counter++; %> <!-- Increment counter for next iteration -->
+                            <% }); %>
             </tbody>
         </table>
-        
+
+
+        <h2>Mitglied Hinzufügen</h2>
+        <form id="mitgliedForm" method="POST">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br>
+            <label for="nachname">Nachname:</label>
+            <input type="text" id="nachname" name="nachname" required><br>
+            <label for="geschlecht">Geschlecht:</label>
+            <input type="text" id="geschlecht" name="geschlecht" required><br>
+            <label for="alter">Alter:</label>
+            <input type="text" id="alter" name="alter" required><br>
+            <label for="funktion">Funktion:</label>
+            <input type="text" id="funktion" name="funktion" required><br>
+            <label for="dienstgrad">Dienstgrad:</label>
+            <input type="text" id="dienstgrad" name="dienstgrad" required><br>
+            <button type="submit">Erstellen</button>
+        </form>
+    </div>
 
     <footer>
         <p>2024 Thomas & Nomo</p>
     </footer>
+
+    <script>
+        document.querySelectorAll('.delete-button').forEach(button =>
+            button.addEventListener('click', async function () {
+                const mitgliedId = event.target.getAttribute('data-index');
+                const gruppenId = '<%= gru_id %>';
+                try {
+                    const response = await fetch(`/bewerbe/gruppen/${gruppenId}/mitglieder/delete/${mitgliedId}`, {
+                        method: 'POST'
+                    });
+                    if (response.ok) {
+                        alert("Member deleted successfully");
+                        window.location.reload(); // Reload page to display updated member list
+                    } else {
+                        alert("Failed to delete member");
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    // Handle network error
+                    alert("Network error occurred");
+                }
+            })
+        );
+        document.getElementById('goBackButton').addEventListener('click', function () {
+            window.history.back();
+        });
+
+        document.getElementById('mitgliedForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const mitgliedData = {};
+            for (const [key, value] of formData.entries()) {
+                mitgliedData[key] = value;
+            }
+            const gruppenId = '<%= gru_id %>';
+            try {
+                const response = await fetch(`/bewerbe/gruppen/${gruppenId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(mitgliedData)
+                });
+
+                if (response.ok) {
+                    alert("Member added successfully");
+                    window.location.reload(); // Reload page to display updated member list
+                } else {
+                    alert("Failed to add member");
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Handle network error
+                alert("Network error occurred");
+            }
+        });
+    </script>
 </body>

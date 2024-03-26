@@ -61,21 +61,17 @@
             <form id="durchlaufForm">
                 <select id="gruppenname" name="gruppenname" required>
                     <% gruppen.forEach(function(gruppe) { %>
-                        <option value="<%= gruppe.gru_name %>"><%= gruppe.gru_feuerwehr %> - <%= gruppe.gru_name %></option>
-                    <% }); %>
+                        <option value="<%= gruppe.gru_name %>">
+                            <%= gruppe.gru_feuerwehr %> - <%= gruppe.gru_name %>
+                        </option>
+                        <% }); %>
                 </select><br>
                 <label for="bewerbsbahn">Bewerbsbahn:</label>
                 <input type="text" id="bewerbsbahn" name="bewerbsbahn" required><br>
-                <label for="zeit">Zeit:</label>
-                <input type="text" id="zeit" name="zeit" required><br>
-                <label for="fehler">Fehler-Ges.:</label>
-                <input type="text" id="fehler" name="fehler" required><br>
-                <label for="punkte">Punkte:</label>
-                <input type="text" id="punkte" name="punkte" required><br>
-                <button type="submit">Durchlauf erstellen</button>
+                <button type="submit">Durchlauf starten</button>
             </form>
         </div>
-        
+
 
         <div class="bewerbDetails">
             <h2 class="bewerbDetails">Bewerbsdetails</h2>
@@ -113,7 +109,7 @@
                 </div>
         </div>
 
-        
+
 
         <button id="toggleGruppeBtn">Gruppe erstellen</button>
         <div id="gruppenFormContainer" style="display: none;">
@@ -127,6 +123,9 @@
                 <button type="submit">Gruppe erstellen</button>
             </form>
         </div>
+
+        <div id="errorMessage" style="display: none; color: red;"></div>
+
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const tbody = document.querySelector("tbody");
@@ -135,6 +134,49 @@
 
                     alert("Noch keine Durchläufe vorhanden. Bitte füge welche hinzu.");
                 }
+            });
+
+            if (mitglieder.length === 0) {
+    // Display error message
+    document.getElementById('errorMessage').innerText = 'Keine Mitglieder in der Gruppe, fügen Sie welche hinzu';
+    document.getElementById('errorMessage').style.display = 'block';
+
+    // Optionally, you can hide the form or other elements if needed
+    document.getElementById('durchlaufFormContainer').style.display = 'none';
+    // You can also handle other UI adjustments or actions here
+}
+            document.getElementById('durchlaufForm').addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
+                console.log("Durchlauf submitted")
+                // Get selected group and bewerbsbahn
+                const gruppenname = document.getElementById('gruppenname').value;
+                const bewerbsbahn = document.getElementById('bewerbsbahn').value;
+
+                // Construct the URL
+                const url = `/bewerbe/<%= bew_id %>/durchlaufe/erstellt`;
+
+                // Construct the request body
+                const body = JSON.stringify({ gruppenname, bewerbsbahn });
+
+                // Make the POST request
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: body
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Durchlauf started successfully');
+                        } else {
+                            console.error('Failed to start Durchlauf');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle network error
+                    });
             });
 
             document.getElementById("gruppenForm").addEventListener("submit", async (event) => {
@@ -189,36 +231,6 @@
                 }
             });
 
-            document.getElementById("durchlaufForm").addEventListener("submit", function (event) {
-                event.preventDefault(); // Prevent default form submission behavior
-
-                const formData = new FormData(document.getElementById("durchlaufForm"));
-
-                const durchlaufData = {};
-                formData.forEach((value, key) => {
-                    durchlaufData[key] = value;
-                });
-
-                fetch("/bewerbe/durchlauf", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(durchlaufData)
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert("Durchlauf erstellt erfolgreich");
-                            window.location.reload(); // Refresh the page
-                        } else {
-                            throw new Error("Fehler beim Erstellen des Durchlaufs");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        alert("Fehler beim Erstellen des Durchlaufs");
-                    });
-            });
 
         </script>
     </div>

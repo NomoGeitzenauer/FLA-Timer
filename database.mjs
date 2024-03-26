@@ -125,29 +125,85 @@ export async function deleteFehlerEintrag(fehlerID) {
 
 export async function getdurchlaufFehler(dur_id) {
     const [rows] = await pool.query(`
-    SELECT  fl.\`id_feh-li\`, f.feh_name, m.mit_name
-    FROM \`tbl_fehler-link\` fl
-    JOIN tbl_fehler f ON fl.id_tbl_fehler_fk = f.id_feh
-    JOIN tbl_mitglied m ON fl.id_tbl_mitglied_fk = m.id_mit
-    WHERE fl.id_tbl_durchlauf_fk = ?
+        SELECT fl.\`id_feh-li\`, f.feh_name, m.mit_name, f.feh_punkte, COUNT(fl.\`id_feh-li\`) as error_count,
+               f.feh_punkte * COUNT(fl.\`id_feh-li\`) as total_error_value
+        FROM \`tbl_fehler-link\` fl
+        JOIN tbl_fehler f ON fl.id_tbl_fehler_fk = f.id_feh
+        JOIN tbl_mitglied m ON fl.id_tbl_mitglied_fk = m.id_mit
+        WHERE fl.id_tbl_durchlauf_fk = ?
+        GROUP BY fl.id_tbl_fehler_fk;
     `, [dur_id]);
     return rows;
 }
 
-// export async function createDurchlauf(dur_gruppe)
-// SELECT id_gru
-// FROM tbl_gruppe
-// WHERE gruppenname = 'your_gruppenname';
+export async function getdurchlaufFehlerListe(dur_id) {
+    const [rows] = await pool.query(`
+        SELECT fl.\`id_feh-li\`, f.feh_name, m.mit_name, f.feh_punkte
+        FROM \`tbl_fehler-link\` fl
+        JOIN tbl_fehler f ON fl.id_tbl_fehler_fk = f.id_feh
+        JOIN tbl_mitglied m ON fl.id_tbl_mitglied_fk = m.id_mit
+        WHERE fl.id_tbl_durchlauf_fk = ?
+    `, [dur_id]);
+    return rows;
+}
 
-export async function getMitglieder(id_mit) {
+async function getGruppeIdByName(gruppeName) {
+    const [rows] = await pool.query('SELECT id_gru FROM tbl_gruppe WHERE gru_name = ?', [gruppeName]);
+    if (rows.length > 0) {
+        return rows[0].id_gru; 
+    } else {
+        return null; 
+    }
+}
+
+export async function createDurchlauf(bew_id, dur_gruppe, dur_bewerbsbahn) {
+    const id_dur_gruppe = await getGruppeIdByName(dur_gruppe);
+
+    // Check if the group name exists in the database
+    if (id_dur_gruppe === null) {
+        throw new Error(`Group with name ${dur_gruppe} not found.`);
+    }
+    
+    const result = await pool.query(`
+    INSERT INTO tbl_durchlauf (id_tbl_bew_fk, id_dur_tbl_gru_fk, dur_bewerbsbahn)
+    VALUES (?, ?, ?)
+    `, [bew_id, id_dur_gruppe, dur_bewerbsbahn]);
+    return result;
+}
+
+export async function completeDurchlauf(dur_id, fehlerges, punkte) {
+    await pool.query(`
+        UPDATE tbl_durchlauf 
+        SET \`dur_fehler-gesamt\` = ?, dur_punkte = ? 
+        WHERE id_dur = ?
+    `, [fehlerges, punkte, dur_id]);
+}
+
+export async function getMitglieder(id_gru) {
     const [rows] = await pool.query(`
     SELECT *
      FROM tbl_mitglied
      WHERE id_tbl_gru_fk = ?
      Order by mit_name
-     `, [id_mit]);
+     `, [id_gru]);
 
     return rows;
+}
+
+export async function createMitglied(mit_name, mit_nachname,mit_geschlecht, mit_alter, mit_funktion, mit_dienstgrad,  gru_id)
+{
+    const [rows] = await pool.query(`
+    INSERT INTO tbl_mitglied (mit_name, mit_nachname, mit_geschlecht, mit_alter, mit_funktion, mit_dienstgrad, id_tbl_gru_fk)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    `, [mit_name, mit_nachname, mit_geschlecht, mit_alter, mit_funktion, mit_dienstgrad, gru_id]);
+    return rows;
+}
+
+export async function deleteMitglied(mit_id, gru_id) {
+    await pool.query(`
+        DELETE FROM tbl_mitglied
+        WHERE id_mit = ? AND id_tbl_gru_fk = ?
+    `, [mit_id, gru_id]);
 }
 
 export function formatDate(dateString) {

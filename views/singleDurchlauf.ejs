@@ -41,78 +41,163 @@
     </form>
 
     <ul>
-        <% durchlauffehler.forEach(durfehler=> { %>
+        <% durchlauffehlerliste.forEach(durfehlerlist=> { %>
             <li>
-                <%= durfehler.feh_name%>
-                    <%=durfehler.mit_name%>
-                        <button data-index="<%=durfehler['id_feh-li']%>" type="button" class="delete-button">X</button>
+                <%= durfehlerlist.feh_name%>
+                    <%=durfehlerlist.mit_name%>
+                        <button data-index="<%=durfehlerlist['id_feh-li']%>" type="button"
+                            class="delete-button">X</button>
             </li>
             <% }); %>
     </ul>
+    <h2>Error Counters</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Error Name</th>
+                <th>Error Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% durchlauffehler.forEach(durfehler=> { %>
+                <tr>
+                    <td>
+                        <%= durfehler.feh_name %>
+                    </td>
+                    <td>
+                        <span id="errorCount<%= durfehler['feh_name'] %>">
+                            <%= durfehler.error_count %>
+                        </span>
+                    </td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
 
-    </ul>
 
-    <script>
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', function () {
-                console.log('delete button clicked');
-                const fehlerLinkId = event.target.dataset.index;
-                const durchlaufID = '<%= dur_id %>';
-                const bewerbID = '<%= bew_id %>';
-                fetch(`/bewerbe/${bewerbID}/durchlaufe/${durchlaufID}/deletefehlerEintrag/${fehlerLinkId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ fehlerLinkId: fehlerLinkId })
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log('Fehler link deleted successfully');
-                            window.location.reload();
-                            // You can add further actions here if needed
-                        } else {
-                            console.error('Failed to delete fehler link');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            });
+    <%let totalCount = 0;
+        durchlauffehler.forEach(durfehler=> {
+        // Add current category count to total count
+        totalCount += durfehler.error_count;
         });
+        %>
+        <div>Gesamte Fehler: <%= totalCount %>
+        </div>
 
-        function submitErrorAndMember(fehlerId, gruppenMitgliedId) {
-            const fehler = fehlerId;
-            const gruppenMitglied = gruppenMitgliedId;
-            const durchlaufID = '<%= dur_id %>';
-            const bewerbID = '<%= bew_id %>';
-            fetch(`/bewerbe/${bewerbID}/durchlaufe/${durchlaufID}/fehlerEintrag`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fehlerId: fehler,
-                    mitgliedId: gruppenMitglied
-                })
-            })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Error submitted successfully');
-                        window.location.reload();
-                        // You can add further actions here if needed
-                    } else {
-                        console.error('Failed to submit error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            addErrorEntry(document.getElementById(`gruppenMitglied${index + 1}`).value, fehlerName);
-        }
+        <% let totalErrorSum=0; %>
+            <% durchlauffehler.forEach(durfehler=> { %>
+                <% totalErrorSum +=durfehler.total_error_value; %>
+                    <% }); %>
+
+                        <div>Gesamt-Punkte: <%= totalErrorSum %>
+                        </div>
 
 
-    </script>
+                        <button id="completeDurchlauf" type="button">Durchlauf beenden</button>
+                        <input type="hidden" id="totalCount" value="<%= totalCount %>">
+                        <input type="hidden" id="totalErrorSum" value="<%= totalErrorSum %>">
+                        
+                        <script>
+
+
+
+                            '<% durchlauffehler.forEach(durfehler => { %>' +
+                                'const errorCountElement<%= durfehler["id_feh-li"] %> = document.getElementById("errorCount<%= durfehler["id_feh-li"] %>");' +
+                                'if (errorCountElement<%= durfehler["id_feh-li"] %>) {' +
+                                'errorCountElement<%= durfehler["id_feh-li"] %>.textContent = "<%= durfehler.error_count %>";' +
+                                '}' +
+                                '<% }); %>'
+//complete Durchlauf
+                            document.getElementById('completeDurchlauf').addEventListener('click', function () {
+                                // Get the total error count and total sum from the page
+                                const totalCount = document.getElementById('totalCount').value;
+                                const totalErrorSum = document.getElementById('totalErrorSum').value;
+                                const bewerbID = '<%=bew_id%>';
+                                const durchlaufID = '<%=dur_id%>';
+                                // Make a POST request to the server with the total error count and total sum
+                                fetch(`/bewerbe/${bewerbID}/durchlaufe/${durchlaufID}/completeDurchlauf`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        dur_fehlergesamt: totalCount,
+                                        dur_punkte: totalErrorSum
+                                    })
+                                })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            console.log('Total error count and total sum submitted successfully');
+                                            window.location.href = `/bewerbe/<%= bew_id %>/durchlaufe/`;
+
+                                        } else {
+                                            console.error('Failed to submit total error count and total sum');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                    });
+                            });
+                            document.querySelectorAll('.delete-button').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    console.log('delete button clicked');
+                                    const fehlerLinkId = event.target.dataset.index;
+                                    const durchlaufID = '<%= dur_id %>';
+                                    const bewerbID = '<%= bew_id %>';
+                                    fetch(`/bewerbe/${bewerbID}/durchlaufe/${durchlaufID}/deletefehlerEintrag/${fehlerLinkId}`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ fehlerLinkId: fehlerLinkId })
+                                    })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                console.log('Fehler link deleted successfully');
+                                                window.location.reload();
+                                                // You can add further actions here if needed
+                                            } else {
+                                                console.error('Failed to delete fehler link');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                        });
+                                });
+                            });
+
+                            function submitErrorAndMember(fehlerId, gruppenMitgliedId) {
+                                const fehler = fehlerId;
+                                const gruppenMitglied = gruppenMitgliedId;
+                                const durchlaufID = '<%= dur_id %>';
+                                const bewerbID = '<%= bew_id %>';
+                                fetch(`/bewerbe/${bewerbID}/durchlaufe/${durchlaufID}/fehlerEintrag`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        fehlerId: fehler,
+                                        mitgliedId: gruppenMitglied
+                                    })
+                                })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            console.log('Error submitted successfully');
+                                            window.location.reload();
+                                            // You can add further actions here if needed
+                                        } else {
+                                            console.error('Failed to submit error');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                    });
+                                addErrorEntry(document.getElementById(`gruppenMitglied${index + 1}`).value, fehlerName);
+                            }
+
+
+                        </script>
 
 </body>
 
