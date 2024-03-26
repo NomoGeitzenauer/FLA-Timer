@@ -11,14 +11,11 @@
 
 <body>
 
-    <h1>
-        <%= durchlauf.dur_name %>
+
+    <h1>Durchlauf der Gruppe <%= durchlaufgruppe.gru_name %>
     </h1>
 
-    <h2>Durchlauf der Gruppe <%= durchlaufgruppe.gru_name %>
-    </h2>
-
-    <a href="/bewerbe/<%= bew_id %>/durchlaufe/">zurück</a>
+   
 
     <form id="errorForm">
         <% fehler.forEach((fehlerItem, index)=> { %>
@@ -93,7 +90,7 @@
                         </div>
 
 
-                        <button id="completeDurchlauf" type="button">Durchlauf beenden</button>
+                        <button id="completeDurchlauf" type="button" class="durchlauf-beendet">Durchlauf beenden</button>
                         <input type="hidden" id="totalCount" value="<%= totalCount %>">
                         <input type="hidden" id="totalErrorSum" value="<%= totalErrorSum %>">
                         
@@ -128,6 +125,7 @@
                                     .then(response => {
                                         if (response.ok) {
                                             console.log('Total error count and total sum submitted successfully');
+                                            window.location.href = `/bewerbe/${bewerbID}/durchlaufe`;
                                         } else {
                                             console.error('Failed to submit total error count and total sum');
                                         }
