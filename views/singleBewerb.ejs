@@ -117,8 +117,7 @@
                 <input type="text" id="gru_feuerwehr" name="gru_feuerwehr" required><br>
                 <label for="gru_name">Gruppenname</label>
                 <input type="text" id="gru_name" name="gru_name" required><br>
-                <label for="gru_alterspunkte">Gruppen-Alterspunkte</label>
-                <input type="number" id="gru_alterspunkte" name="gru_alterspunkte" required>
+
                 <button type="submit">Gruppe erstellen</button>
             </form>
         </div>
@@ -237,13 +236,13 @@ document.querySelectorAll('.delete-gruppe').forEach(button => {
                 // Get selected group and bewerbsbahn
                 const gru_feuerwehr = document.getElementById('gru_feuerwehr').value;
                 const gru_name = document.getElementById('gru_name').value;
-                const gru_alterspunkte = document.getElementById('gru_alterspunkte').value;
+              
 
                 // Construct the URL
                 const url = `/bewerbe/<%= bew_id %>/gruppen/erstellt`;
 
                 // Construct the request body
-                const body = JSON.stringify({ gru_feuerwehr, gru_name, gru_alterspunkte });
+                const body = JSON.stringify({ gru_feuerwehr, gru_name});
 
                 // Make the POST request
                 fetch(url, {

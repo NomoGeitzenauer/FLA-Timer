@@ -120,8 +120,8 @@ app.post("/bewerbe/:id/durchlaufe/erstellt", async (req, res) => {
 });
 
 app.post("/bewerbe/:id/gruppen/erstellt", async (req, res) => {
-    const { gru_name, gru_feuerwehr, gru_alterspunkte } = req.body;
-    const gruppen = await createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte);
+    const { gru_name, gru_feuerwehr} = req.body;
+    const gruppen = await createGruppen(gru_name, gru_feuerwehr);
     res.status(201).send({ message: "Gruppen created successfully" });
 });
 
@@ -144,7 +144,9 @@ app.post("/bewerbe/:id/durchlaufe/:id2/completeDurchlauf", async (req, res) => {
     res.status(201).send({ message: "Durchlauf completed successfully" });
 }
 );
-
+//TODO: hier
+//alterspunkte einstellen
+//zb ab 40 jahren 4 punkte
 //creating a new fehler
 app.post("/bewerbe/:id/durchlaufe/:id2/fehlerEintrag", async (req, res) => {
     const { fehlerId, mitgliedId } = req.body; // Make sure to use the correct property names
@@ -164,11 +166,11 @@ app.post("/bewerbe/:id/durchlaufe/:id2/deletefehlerEintrag/:id3", async (req, re
 
 //creating a new bewerb
 app.post("/bewerbe", async (req, res) => {
-    const { bew_name, bew_art, bew_wetter, bew_datum } = req.body;
+    const { bew_name, bew_art, bew_wetter, bew_datum,bew_threshholdalterspunkte,bew_valuealterspunkte } = req.body;
     const datetimeValue = bew_datum;
     const formattedDatetime = moment(datetimeValue).format('YYYY-MM-DD HH:mm');
     console.log(formattedDatetime);
-    const bewerb = await createBewerb(bew_name, bew_art, bew_wetter, formattedDatetime);
+    const bewerb = await createBewerb(bew_name, bew_art, bew_wetter, formattedDatetime, bew_threshholdalterspunkte, bew_valuealterspunkte);
     res.status(201).send({ message: "Bewerb created successfully" });
 
 })
@@ -183,9 +185,9 @@ app.post("/deleteBewerb/:id", async (req, res) => {
 
 //creating a new gruppe
 app.post("/bewerbe/gruppen", async (req, res) => {
-    const { gru_feuerwehr, gru_name, gru_alterspunkte } = req.body;
+    const { gru_feuerwehr, gru_name} = req.body;
     console.log(req.body);
-    const gruppen = await createGruppen(gru_name, gru_feuerwehr, gru_alterspunkte);
+    const gruppen = await createGruppen(gru_name, gru_feuerwehr);
     res.status(201).send({ message: "Gruppen created successfully" });
 });
 
