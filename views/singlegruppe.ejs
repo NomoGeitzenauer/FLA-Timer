@@ -73,13 +73,24 @@
             <label for="nachname">Nachname:</label>
             <input type="text" id="nachname" name="nachname" required><br>
             <label for="geschlecht">Geschlecht:</label>
-            <input type="text" id="geschlecht" name="geschlecht" required><br>
+            <select id="geschlecht" name="geschlecht" required>
+                <option value="M">M</option>
+                <option value="F">F</option>
+            </select><br>
             <label for="alter">Alter:</label>
-            <input type="text" id="alter" name="alter" required><br>
+            <input type="number" id="alter" name="alter" min="0" max="100" required><br>
             <label for="funktion">Funktion:</label>
-            <input type="text" id="funktion" name="funktion" required><br>
+            <select id="funktion" name="funktion" required>
+                <option value="Funktion 1">Funktion 1</option>
+                <option value="Funktion 2">Funktion 2</option>
+                <option value="Funktion 3">Funktion 3</option>
+            </select><br>
             <label for="dienstgrad">Dienstgrad:</label>
-            <input type="text" id="dienstgrad" name="dienstgrad" required><br>
+            <select id="dienstgrad" name="dienstgrad" required>
+                <option value="Dienstgrad 1">Dienstgrad 1</option>
+                <option value="Dienstgrad 2">Dienstgrad 2</option>
+                <option value="Dienstgrad 3">Dienstgrad 3</option>
+            </select><br>
             <button type="submit">Erstellen</button>
         </form>
     </div>
@@ -110,8 +121,10 @@
                 }
             })
         );
-        document.getElementById('goBackButton').addEventListener('click', function () {
-            window.history.back();
+        document.getElementById("goBackButton");
+        goBackButton.addEventListener("click", function (e) {
+            e.preventDefault(); // Cancel the native event
+            window.location.replace(document.referrer); // Navigate to the previous page and refresh it
         });
 
         document.getElementById('mitgliedForm').addEventListener('submit', async (event) => {

@@ -19,6 +19,8 @@
         <table>
             <thead>
                 <tr>
+                    <th>#</th>
+                    <th>Nr.</th>
                     <th>Feuerwehr</th>
                     <th>Gruppenname</th>
                     <th>Bewerbsbahn</th>
@@ -28,32 +30,42 @@
                 </tr>
             </thead>
             <tbody>
-                <% durchlaufe.forEach(durchlauf=> { %>
-                    <tr>
-                        <td>
-                            <%= durchlauf.gru_feuerwehr %>
-                        </td>
-                        <td>
-                            <%= durchlauf.gru_name %>
-                        </td>
-                        <td>
-                            <%=durchlauf.dur_bewerbsbahn %>
-                        </td>
-                        <td>
-                            <%= durchlauf.dur_zeit%>
-                        </td>
-                        <td>
-                            <%= durchlauf['dur_fehler-gesamt'] %>
-                        </td>
-                        <td>
-                            <%= durchlauf.dur_punkte%>
-                        </td>
-                        <td>
-                            <a href="/bewerbe/<%=bew_id%>/durchlaufe/<%=durchlauf.id_dur%>"> Starten --></a>
-                        </td>
-                    </tr>
-                    <% }); %>
+                <% let counter=1; %>
+                    <% durchlaufe.forEach(durchlauf=> { %>
+                        <tr>
+                            <td>
+                                <button data-index="<%= durchlauf.id_dur %>" type="button"
+                                    class="delete-durchlauf">X</button>
+                            </td>
+                            <td>
+                                <%= counter %>
+                            </td>
+                            <td>
+                                <%= durchlauf.gru_feuerwehr %>
+                            </td>
+                            <td>
+                                <%= durchlauf.gru_name %>
+                            </td>
+                            <td>
+                                <%= durchlauf.dur_bewerbsbahn %>
+                            </td>
+                            <td>
+                                <%= durchlauf.dur_zeit %>
+                            </td>
+                            <td>
+                                <%= durchlauf['dur_fehler-gesamt'] %>
+                            </td>
+                            <td>
+                                <%= durchlauf.dur_punkte %>
+                            </td>
+                            <td>
+                                <a href="/bewerbe/<%= bew_id %>/durchlaufe/<%= durchlauf.id_dur %>"> Starten --></a>
+                            </td>
+                        </tr>
+                        <% counter++; %>
+                            <% }); %>
             </tbody>
+
         </table>
 
         <button id="toggleFormBtn">Durchlauf erstellen</button>
@@ -133,64 +145,64 @@
                 }
             });
 
-            document.querySelectorAll('.delete-gruppe').forEach(button => {
-                button.addEventListener('click', function (event) { // Added event parameter
-                    console.log('Delete Gruppe clicked')
-document.querySelectorAll('.delete-gruppe').forEach(button => {
-    button.addEventListener('click', function (event) {
-        if (confirm('Are you sure you want to delete this group?')) {
-            const gruppeId = event.target.dataset.index;
-            const url = `/bewerbe/<%= bew_id %>/gruppen/${gruppeId}/delete`;
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    gruppeId
-                })
-            })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Gruppe deleted successfully');
-                        window.location.reload();
-                    } else {
-                        console.error('Failed to delete Gruppe');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // Handle network error
-                });
-        }
-    });
-});
-                    
-                    const gruppeId = event.target.dataset.index;
-                    const url = `/bewerbe/<%= bew_id %>/gruppen/${gruppeId}/delete`;
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            gruppeId // Changed from gruppeID to gruppeId
-                        })
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                console.log('Gruppe deleted successfully');
-                                window.location.reload();
-                            } else {
-                                console.error('Failed to delete Gruppe');
+            document.querySelectorAll('.delete-durchlauf').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    if (confirm('Are you sure you want to delete this Durchlauf?')) {
+                        const durchlaufId = event.target.dataset.index;
+                        const url = `/bewerbe/<%= bew_id %>/durchlaufe/${durchlaufId}/delete`;
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
                             }
                         })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            // Handle network error
-                        });
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log('Durchlauf deleted successfully');
+                                    window.location.reload();
+                                } else {
+                                    console.error('Failed to delete Durchlauf');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                // Handle network error
+                            });
+                    }
                 });
             });
+
+
+            document.querySelectorAll('.delete-gruppe').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    if (confirm('Are you sure you want to delete this group?')) {
+                        const gruppeId = event.target.dataset.index;
+                        const url = `/bewerbe/<%= bew_id %>/gruppen/${gruppeId}/delete`;
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                gruppeId
+                            })
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log('Gruppe deleted successfully');
+                                    window.location.reload();
+                                } else {
+                                    console.error('Failed to delete Gruppe');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                // Handle network error
+                            });
+                    }
+                });
+            });
+
 
 
 
@@ -236,13 +248,13 @@ document.querySelectorAll('.delete-gruppe').forEach(button => {
                 // Get selected group and bewerbsbahn
                 const gru_feuerwehr = document.getElementById('gru_feuerwehr').value;
                 const gru_name = document.getElementById('gru_name').value;
-              
+
 
                 // Construct the URL
                 const url = `/bewerbe/<%= bew_id %>/gruppen/erstellt`;
 
                 // Construct the request body
-                const body = JSON.stringify({ gru_feuerwehr, gru_name});
+                const body = JSON.stringify({ gru_feuerwehr, gru_name });
 
                 // Make the POST request
                 fetch(url, {

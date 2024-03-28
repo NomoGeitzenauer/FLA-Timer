@@ -15,84 +15,89 @@
     <h1>Durchlauf der Gruppe <%= durchlaufgruppe.gru_name %>
     </h1>
 
-   
-
-    <form id="errorForm">
-        <% fehler.forEach((fehlerItem, index)=> { %>
-            <label for="gruppenMitglied<%= index + 1 %>">
-                <%= fehlerItem.feh_name %> Fehler:
-            </label>
-            <select id="gruppenMitglied<%= index + 1 %>" name="gruppenMitglied<%= index + 1 %>">
-                <% mitglieder.forEach(mitglied=> { %>
-                    <option value="<%= mitglied.id_mit %>">
-                        <%= mitglied.mit_name %>
-                    </option>
+    <% if (mitglieder.length === 0) { %>
+        <p>Keine Mitglieder in der Gruppe</p>
+        <a href="/bewerbe/gruppen/<%= durchlaufgruppe.id_gru %>">Mitglieder hinzufügen</a>
+    <% } else {%>
+        <form id="errorForm">
+            <% fehler.forEach((fehlerItem, index) => { %>
+                <label for="gruppenMitglied<%= index + 1 %>">
+                    <%= fehlerItem.feh_name %> Fehler:
+                </label>
+                <select id="gruppenMitglied<%= index + 1 %>" name="gruppenMitglied<%= index + 1 %>">
+                    <% mitglieder.forEach(mitglied => { %>
+                        <option value="<%= mitglied.id_mit %>">
+                            <%= mitglied.mit_name %>
+                        </option>
                     <% }); %>
-            </select>
-            <button type="button"
-                onclick="submitErrorAndMember('<%= fehlerItem.id_feh %>', document.getElementById('gruppenMitglied<%= index + 1 %>').value)">Submit</button>
-            <br>
-
-
+                </select>
+                <button type="button" onclick="submitErrorAndMember('<%= fehlerItem.id_feh %>', document.getElementById('gruppenMitglied<%= index + 1 %>').value)">Submit</button>
+                <br>
             <% }); %>
-    </form>
-
-    <ul>
-        <% durchlauffehlerliste.forEach(durfehlerlist=> { %>
-            <li>
-                <%= durfehlerlist.feh_name%>
-                    <%=durfehlerlist.mit_name%>
-                        <button data-index="<%=durfehlerlist['id_feh-li']%>" type="button"
-                            class="delete-button">X</button>
-            </li>
-            <% }); %>
-    </ul>
-    <h2>Error Counters</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Error Name</th>
-                <th>Error Count</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% durchlauffehler.forEach(durfehler=> { %>
-                <tr>
-                    <td>
-                        <%= durfehler.feh_name %>
-                    </td>
-                    <td>
-                        <span id="errorCount<%= durfehler['feh_name'] %>">
-                            <%= durfehler.error_count %>
-                        </span>
-                    </td>
-                </tr>
-                <% }); %>
-        </tbody>
-    </table>
-
-
-    <%let totalCount = 0;
-        durchlauffehler.forEach(durfehler=> {
-        // Add current category count to total count
-        totalCount += durfehler.error_count;
-        });
-        %>
-        <div>Gesamte Fehler: <%= totalCount %>
-        </div>
-
-        <% let totalErrorSum=0; %>
-            <% durchlauffehler.forEach(durfehler=> { %>
-                <% totalErrorSum +=durfehler.total_error_value; %>
+        </form>
+        
+        
+            <ul>
+                <% durchlauffehlerliste.forEach(durfehlerlist=> { %>
+                    <li>
+                        <%= durfehlerlist.feh_name%>
+                            <%=durfehlerlist.mit_name%>
+                                <button data-index="<%=durfehlerlist['id_feh-li']%>" type="button"
+                                    class="delete-button">X</button>
+                    </li>
                     <% }); %>
+            </ul>
+            <h2>Error Counters</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Error Name</th>
+                        <th>Error Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% durchlauffehler.forEach(durfehler=> { %>
+                        <tr>
+                            <td>
+                                <%= durfehler.feh_name %>
+                            </td>
+                            <td>
+                                <span id="errorCount<%= durfehler['feh_name'] %>">
+                                    <%= durfehler.error_count %>
+                                </span>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+        
+        
+            <%let totalCount = 0;
+                durchlauffehler.forEach(durfehler=> {
+                // Add current category count to total count
+                totalCount += durfehler.error_count;
+                });
+                %>
+                <div>Gesamte Fehler: <%= totalCount %>
+                </div>
+        
+                <% let totalErrorSum=0; %>
+                    <% durchlauffehler.forEach(durfehler=> { %>
+                        <% totalErrorSum +=durfehler.total_error_value; %>
+                            <% }); %>
+        
+                                <div>Gesamt-Punkte: <%= totalErrorSum %>
+                                </div>
+        
+        
+                                <button id="completeDurchlauf" type="button" class="durchlauf-beendet">Durchlauf beenden</button>
+                                <input type="hidden" id="totalCount" value="<%= totalCount %>">
+                                <input type="hidden" id="totalErrorSum" value="<%= totalErrorSum %>">
+    <% } %>
+    <div>Alterspunkte: <%= alterspunkte%></div>
+    
 
-                        <div>Gesamt-Punkte: <%= totalErrorSum %>
-                        </div>
 
-
-                        <button id="completeDurchlauf" type="button" class="durchlauf-beendet">Durchlauf beenden</button>
-                        <input type="hidden" id="totalCount" value="<%= totalCount %>">
-                        <input type="hidden" id="totalErrorSum" value="<%= totalErrorSum %>">
                         
                         <script>
 

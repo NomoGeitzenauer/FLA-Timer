@@ -203,6 +203,26 @@ export async function completeDurchlauf(dur_id, fehlerges, punkte) {
     `, [fehlerges, punkte, dur_id]);
 }
 
+export async function deleteDurchlauf(dur_id) {
+    await pool.query(`
+        DELETE FROM tbl_durchlauf
+        WHERE id_dur = ?
+    `, [dur_id]);
+}
+
+export async function getAlterspunkte(id_dur) {
+    const [rows] = await pool.query(`
+        SELECT gbl.gb_link_alterspunkte
+        FROM tbl_gru_bew_link AS gbl
+        JOIN tbl_durchlauf AS td ON gbl.id_gru_bew_link = td.id_tbl_gb_link_fk
+        WHERE td.id_dur = ?
+    `, [id_dur]);
+
+    
+    return rows[0].gb_link_alterspunkte;
+}
+
+
 export async function getMitglieder(id_gru) {
     const [rows] = await pool.query(`
     SELECT *

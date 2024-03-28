@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 //using database
 import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler,getdurchlaufFehlerListe } from './database.mjs'
 import { formatDate,deleteFehlerEintrag } from './database.mjs'
-import { getGruppen, createGruppen,deleteGruppe, getdruchlaufe, createDurchlauf, completeDurchlauf,createMitglied,deleteMitglied} from './database.mjs'
+import { getGruppen, createGruppen,deleteGruppe, getdruchlaufe, createDurchlauf,deleteDurchlauf, completeDurchlauf,createMitglied,deleteMitglied, getAlterspunkte} from './database.mjs'
 import moment from 'moment';
 //import { getMitglieder } from './database.mjs'
 app.set("view engine", "ejs");
@@ -93,7 +93,10 @@ app.get("/bewerbe/:id/durchlaufe/:id2", async (req, res) => {
     const mitglieder = await getMitglieder(durchlaufgruppe.id_gru);
     const durchlauffehler = await getdurchlaufFehler(dur_id);
     const durchlauffehlerliste= await getdurchlaufFehlerListe(dur_id);
-    console.log(durchlauffehler);
+    
+    const { id, id2 } = req.params;
+
+    //console.log(durchlauffehler);
     if (!bewerb) {
         res.status(404).send("Bewerb not found");
         return;
@@ -103,13 +106,19 @@ app.get("/bewerbe/:id/durchlaufe/:id2", async (req, res) => {
         res.status(404).send("Durchlauf not found");
         return;
     }
-    if (mitglieder.length === 0) {
-        res.send("Keine Mitglieder in der Gruppe");
-        return;
-    }
-    res.render("singleDurchlauf.ejs", { durchlauf, durchlaufgruppe, bew_id, fehler: fehler, mitglieder, dur_id, durchlauffehler,durchlauffehlerliste});
+    
+    const alterspunkte = await getAlterspunkte(dur_id);
+    
+    res.render("singleDurchlauf.ejs", { durchlauf, durchlaufgruppe, bew_id, fehler: fehler, mitglieder, dur_id, durchlauffehler,durchlauffehlerliste,alterspunkte});
 }
 )
+
+app.post("/bewerbe/time", async (req, res) => {
+    const { bew_id, dur_id, time } = req.body;
+    console.log(time);
+    res.status(201).send({ message: "Time created successfully" });
+}
+);
 
 app.post("/bewerbe/:id/durchlaufe/erstellt", async (req, res) => {
     const { gruppenname, bewerbsbahn } = req.body;
@@ -124,6 +133,16 @@ app.post("/bewerbe/:id/gruppen/erstellt", async (req, res) => {
     const gruppen = await createGruppen(gru_name, gru_feuerwehr);
     res.status(201).send({ message: "Gruppen created successfully" });
 });
+
+//deleting durchlauf
+
+app.post(`/bewerbe/:id/durchlaufe/:id2/delete`, async (req, res) => {
+    const dur_id = req.params.id2;
+    await deleteDurchlauf(dur_id);
+    res.status(201).send({ message: "Durchlauf deleted successfully" });
+}
+);
+
 
 app.post(`/bewerbe/:id/gruppen/:id2/delete`, async (req, res) => {	
     const gru_id = req.params.id2;	
@@ -144,10 +163,7 @@ app.post("/bewerbe/:id/durchlaufe/:id2/completeDurchlauf", async (req, res) => {
     res.status(201).send({ message: "Durchlauf completed successfully" });
 }
 );
-//TODO: hier
-//alterspunkte einstellen
-//zb ab 40 jahren 4 punkte
-//creating a new fehler
+
 app.post("/bewerbe/:id/durchlaufe/:id2/fehlerEintrag", async (req, res) => {
     const { fehlerId, mitgliedId } = req.body; // Make sure to use the correct property names
     console.log(req.body);
