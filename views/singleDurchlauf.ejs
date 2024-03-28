@@ -12,13 +12,14 @@
 <body>
 
 
-    <h1>Durchlauf der Gruppe <%= durchlaufgruppe.gru_name %>
-    </h1>
-
+    
     <% if (mitglieder.length === 0) { %>
         <p>Keine Mitglieder in der Gruppe</p>
         <a href="/bewerbe/gruppen/<%= durchlaufgruppe.id_gru %>">Mitglieder hinzufügen</a>
     <% } else {%>
+        <h1>Durchlauf der Gruppe <%= durchlaufgruppe.gru_name %>
+        </h1>
+        <a href="/bewerbe/gruppen/<%= durchlaufgruppe.id_gru %>">Mitglieder hinzufügen</a>
         <form id="errorForm">
             <% fehler.forEach((fehlerItem, index) => { %>
                 <label for="gruppenMitglied<%= index + 1 %>">
@@ -93,8 +94,9 @@
                                 <button id="completeDurchlauf" type="button" class="durchlauf-beendet">Durchlauf beenden</button>
                                 <input type="hidden" id="totalCount" value="<%= totalCount %>">
                                 <input type="hidden" id="totalErrorSum" value="<%= totalErrorSum %>">
+                                <div>Alterspunkte: <%= alterspunkte%></div>
     <% } %>
-    <div>Alterspunkte: <%= alterspunkte%></div>
+    
     
 
 

@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 //using database
 import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler,getdurchlaufFehlerListe } from './database.mjs'
 import { formatDate,deleteFehlerEintrag } from './database.mjs'
-import { getGruppen, createGruppen,deleteGruppe, getdruchlaufe, createDurchlauf,deleteDurchlauf, completeDurchlauf,createMitglied,deleteMitglied, getAlterspunkte} from './database.mjs'
+import { getGruppen, createGruppen,deleteGruppe, getdruchlaufe, createDurchlauf,deleteDurchlauf, completeDurchlauf,createMitglied,deleteMitglied, getAlterspunkte, updateAlterspunkte} from './database.mjs'
 import moment from 'moment';
 //import { getMitglieder } from './database.mjs'
 app.set("view engine", "ejs");
@@ -106,7 +106,7 @@ app.get("/bewerbe/:id/durchlaufe/:id2", async (req, res) => {
         res.status(404).send("Durchlauf not found");
         return;
     }
-    
+    await updateAlterspunkte(durchlaufgruppe.id_gru,dur_id)
     const alterspunkte = await getAlterspunkte(dur_id);
     
     res.render("singleDurchlauf.ejs", { durchlauf, durchlaufgruppe, bew_id, fehler: fehler, mitglieder, dur_id, durchlauffehler,durchlauffehlerliste,alterspunkte});

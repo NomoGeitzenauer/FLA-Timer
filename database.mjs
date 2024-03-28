@@ -91,18 +91,29 @@ export async function getGruppeByDurchlauf(id_dur) {
 export async function createGruppen(gru_name, gru_feuerwehr) {
     const result = await pool.query(`
     INSERT INTO tbl_gruppe (gru_name, gru_feuerwehr)
-    VALUES (?, ?, ?)
+    VALUES (?, ?)
     `, [gru_name, gru_feuerwehr]);
     const gru_id = result[0].insertId
     return getGruppe(gru_id);
 }
 
 export async function deleteGruppe(gru_id) {
-    await pool.query(`
-    DELETE FROM tbl_gruppe
-    WHERE id_gru = ?
-    `, [gru_id]);
+    try {
+        // Disable foreign key checks
+        await pool.query(`SET FOREIGN_KEY_CHECKS = 0`);
+
+        // Delete from tbl_gruppe
+        await pool.query(`DELETE FROM tbl_gruppe WHERE id_gru = ?`, [gru_id]);
+
+        // Enable foreign key checks
+        await pool.query(`SET FOREIGN_KEY_CHECKS = 1`);
+    } catch (error) {
+        // Handle errors
+        console.error("Error deleting group:", error);
+        throw error; // Rethrow the error for handling in the caller function
+    }
 }
+
 
 export async function getdruchlaufe(bewerbID) {
     const [rows] = await pool.query(`
@@ -194,6 +205,11 @@ export async function createDurchlauf(bew_id, dur_gruppe, dur_bewerbsbahn) {
 }
 
 
+export async function updateAlterspunkte(id_dur_gruppe) {
+    await pool.query(`
+    CALL update_alterspunkte_trigger_after_insert_bew_link(?)
+`, [id_dur_gruppe]);
+}
 
 export async function completeDurchlauf(dur_id, fehlerges, punkte) {
     await pool.query(`
