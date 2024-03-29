@@ -83,6 +83,7 @@ export async function getGruppeByDurchlauf(id_dur) {
         JOIN tbl_durchlauf d ON l.id_gru_bew_link = d.id_tbl_gb_link_fk
         WHERE d.id_dur = ?
     `, [id_dur]);
+
     return rows[0];
 }
 
@@ -99,6 +100,34 @@ export async function createGruppen(gru_name, gru_feuerwehr) {
 
 export async function deleteGruppe(gru_id) {
     try {
+
+        // Delete from tbl_gruppe
+        await pool.query(`UPDATE tbl_gruppe
+        SET gru_is_deleted = TRUE
+        WHERE id_gru = ?;`, [gru_id]);
+
+    } catch (error) {
+        // Handle errors
+        console.error("Error deleting group:", error);
+        throw error; // Rethrow the error for handling in the caller function
+    }
+}
+
+export async function restoreGruppe(gru_id)
+{
+    try {
+        await pool.query(`UPDATE tbl_gruppe
+        SET gru_is_deleted = FALSE
+        WHERE id_gru = ?;`, [gru_id]);
+    } catch (error) {
+        console.error("Error restoring group:", error);
+        throw error;
+    }
+}
+
+export async function fulldeleteGruppe(gru_id) {
+
+    try {
         // Disable foreign key checks
         await pool.query(`SET FOREIGN_KEY_CHECKS = 0`);
 
@@ -114,16 +143,15 @@ export async function deleteGruppe(gru_id) {
     }
 }
 
-
 export async function getdruchlaufe(bewerbID) {
     const [rows] = await pool.query(`
-        SELECT d.*, b.bew_name, g.gru_name, g.gru_feuerwehr
-        FROM tbl_durchlauf d
-        JOIN tbl_gru_bew_link l ON d.id_tbl_gb_link_fk = l.id_gru_bew_link
-        JOIN tbl_bewerb b ON d.id_tbl_gb_link_fk = l.id_gru_bew_link
-        JOIN tbl_gruppe g ON l.id_gb_link_gru_fk = g.id_gru
-        WHERE b.id_bew = ?
-        ORDER BY d.dur_zeit ASC
+    SELECT d.*, b.bew_name, g.gru_name, g.gru_feuerwehr, g.gru_is_deleted
+    FROM tbl_durchlauf d
+    JOIN tbl_gru_bew_link l ON d.id_tbl_gb_link_fk = l.id_gru_bew_link
+    JOIN tbl_bewerb b ON l.id_tbl_bew_fk = b.id_bew
+    JOIN tbl_gruppe g ON l.id_gb_link_gru_fk = g.id_gru
+    WHERE b.id_bew = ?
+    ORDER BY d.dur_zeit ASC;
     `, [bewerbID]);
     return rows;
 }

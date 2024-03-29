@@ -4,9 +4,9 @@ const app = express()
 //using body-parser
 import bodyParser from 'body-parser';
 //using database
-import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler,getdurchlaufFehlerListe } from './database.mjs'
-import { formatDate,deleteFehlerEintrag } from './database.mjs'
-import { getGruppen, createGruppen,deleteGruppe, getdruchlaufe, createDurchlauf,deleteDurchlauf, completeDurchlauf,createMitglied,deleteMitglied, getAlterspunkte, updateAlterspunkte} from './database.mjs'
+import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler,getdurchlaufFehlerListe } from './database.js'
+import { formatDate,deleteFehlerEintrag, fulldeleteGruppe,restoreGruppe} from './database.js'
+import { getGruppen, createGruppen,deleteGruppe, getdruchlaufe, createDurchlauf,deleteDurchlauf, completeDurchlauf,createMitglied,deleteMitglied, getAlterspunkte, updateAlterspunkte} from './database.js'
 import moment from 'moment';
 //import { getMitglieder } from './database.mjs'
 app.set("view engine", "ejs");
@@ -89,13 +89,13 @@ app.get("/bewerbe/:id/durchlaufe/:id2", async (req, res) => {
     const dur_id = req.params.id2;
     const bewerb = await getBewerb(bew_id);
     const durchlaufgruppe = await getGruppeByDurchlauf(dur_id);
+    
     const fehler = await getFehler();
     const mitglieder = await getMitglieder(durchlaufgruppe.id_gru);
     const durchlauffehler = await getdurchlaufFehler(dur_id);
     const durchlauffehlerliste= await getdurchlaufFehlerListe(dur_id);
     
     const { id, id2 } = req.params;
-
     //console.log(durchlauffehler);
     if (!bewerb) {
         res.status(404).send("Bewerb not found");
@@ -123,7 +123,7 @@ app.post("/bewerbe/time", async (req, res) => {
 app.post("/bewerbe/:id/durchlaufe/erstellt", async (req, res) => {
     const { gruppenname, bewerbsbahn } = req.body;
     const bew_id = req.params.id;
-    const dur_gruppe = gruppenname; // Assuming gruppenname is the correct field name
+    const dur_gruppe = gruppenname; 
     const durchlauf = await createDurchlauf(bew_id, dur_gruppe, bewerbsbahn);
     res.status(201).send({ message: "Durchlauf created successfully" });
 });
@@ -143,13 +143,29 @@ app.post(`/bewerbe/:id/durchlaufe/:id2/delete`, async (req, res) => {
 }
 );
 
+//Soft deleting gruppe
 
 app.post(`/bewerbe/:id/gruppen/:id2/delete`, async (req, res) => {	
-    const gru_id = req.params.id2;	
     const {gruppeId}=req.body;
     const gruppe= gruppeId;
     await deleteGruppe(gruppe);	
     res.status(201).send({ message: "Gruppe deleted successfully" });	
+}
+);
+
+app.post(`/bewerbe/:id/gruppen/:id2/restore`, async (req, res) => {
+    const {gruppeId}=req.body;
+    const gruppe= gruppeId;
+    await restoreGruppe(gruppe);	
+    res.status(201).send({ message: "Gruppe restored successfully" });	
+}
+);
+
+//full deleting gruppe
+app.post(`/bewerbe/:id/gruppen/:id2/fulldelete`, async (req, res) => {
+    const gru_id = req.params.id2;
+    await fulldeleteGruppe(gru_id);
+    res.status(201).send({ message: "Gruppe deleted successfully" });
 }
 );
 

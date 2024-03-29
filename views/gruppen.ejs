@@ -20,6 +20,15 @@
     <div class="scrollable-container">
         <% gruppen.forEach(gruppe=> { %>
             <div class="bewerb-container">
+                <%if(gruppe.gru_is_deleted) { %>
+                    <p>
+                        Status: Archiviert
+                        <%= gruppe.gru_feuerwehr %>
+                            <%= gruppe.gru_name %>
+                        <button type="button" data-index="<%= gruppe.id_gru %>" class="restore-gruppe">Gruppe Wiederherstellen</button>
+                        <button type="button" data-index="<%=gruppe.id_gru %>" class="full-delete-gruppe">Gruppe ganz löschen</button>
+                    </p>
+                    <% } else { %>
                 <p>
                     <%= gruppe.gru_feuerwehr %>
 
@@ -27,8 +36,11 @@
                         <%= gruppe.gru_name %>
 
                             <a href="/bewerbe/gruppen/<%=gruppe.id_gru%>"> --></a>
+                            <button type="button" data-index="<%=gruppe.id_gru %>" class="soft-delete-gruppe">Gruppe Archivieren</button>
                 </p>
+                <% } %>
                 <% }); %>
+                
             </div>
     </div>
     <div class="formhs">
@@ -45,6 +57,79 @@
         <p>2024 Thomas & Nomo</p>
     </footer>
     <script>
+
+        document.querySelectorAll(".full-delete-gruppe").forEach((button) => {
+            button.addEventListener("click", async (event) => {
+                const gruppeId = event.target.dataset.index;
+                try {
+                    const response = await fetch(`/bewerbe/0/gruppen/${gruppeId}/fulldelete`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ gruppeId: gruppeId})
+
+                    });
+
+                    if (response.ok) {
+                        alert("Gruppe gelöscht");
+                        window.location.reload();
+                    } else {
+                        alert("Fehler beim Löschen der Gruppe");
+                    }
+                } catch (error) {
+                    console.error('fetch /bewerb error:', error);
+                }
+            });
+        });
+
+        document.querySelectorAll(".soft-delete-gruppe").forEach((button) => {
+            button.addEventListener("click", async (event) => {
+                const gruppeId = event.target.dataset.index;
+                try {
+                    const response = await fetch(`/bewerbe/0/gruppen/${gruppeId}/delete`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ gruppeId: gruppeId })
+                    });
+                    if (response.ok) {
+                        alert("Gruppe archiviert");
+                        window.location.reload();
+                    } else {
+                        alert("Fehler beim Archivieren der Gruppe");
+                    }
+                } catch (error) {
+                    console.error('fetch /bewerb error:', error);
+                }
+            });
+        });
+
+        document.querySelectorAll(".restore-gruppe").forEach((button) => {
+            button.addEventListener("click", async (event) => {
+                const gruppeId = event.target.dataset.index;
+                try {
+                    const response = await fetch(`/bewerbe/0/gruppen/${gruppeId}/restore`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ gruppeId: gruppeId })
+                    });
+                    if (response.ok) {
+                        alert("Gruppe wiederhergestellt");
+                        window.location.reload();
+                    } else {
+                        alert("Fehler beim Wiederherstellen der Gruppe");
+                    }
+                } catch (error) {
+                    console.error('fetch /bewerb error:', error);
+                }
+            });
+        });
+
+
         document.getElementById("gruppeForm").addEventListener("submit", async (event) => {
             event.preventDefault(); // Prevent default form submission behavior
 

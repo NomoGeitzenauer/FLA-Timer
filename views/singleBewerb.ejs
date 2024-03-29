@@ -59,7 +59,11 @@
                                 <%= durchlauf.dur_punkte %>
                             </td>
                             <td>
-                                <a href="/bewerbe/<%= bew_id %>/durchlaufe/<%= durchlauf.id_dur %>"> Starten --></a>
+                                <% if (!durchlauf.gru_is_deleted) { %>
+                                    <a href="/bewerbe/<%= bew_id %>/durchlaufe/<%= durchlauf.id_dur %>">Starten --></a>
+                                <% } else { %>
+                                    <p>Gruppe gelöscht</p>
+                                <% } %>
                             </td>
                         </tr>
                         <% counter++; %>
@@ -72,11 +76,15 @@
         <div id="durchlaufFormContainer" style="display: none;">
             <form id="durchlaufForm">
                 <select id="gruppenname" name="gruppenname" required>
+                    
                     <% gruppen.forEach(function(gruppe) { %>
+                        <% if (!gruppe.gru_is_deleted) { %>
                         <option value="<%= gruppe.gru_name %>">
                             <%= gruppe.gru_feuerwehr %> - <%= gruppe.gru_name %>
                         </option>
+                        <% } %>
                         <% }); %>
+                        
                 </select><br>
                 <label for="bewerbsbahn">Bewerbsbahn:</label>
                 <input type="text" id="bewerbsbahn" name="bewerbsbahn" required><br>
@@ -107,9 +115,12 @@
 
         <h2>Bestehende Gruppen</h2>
         <div class="scrollable-container">
+            
             <% gruppen.forEach(gruppe=> { %>
+                <% if (!gruppe.gru_is_deleted) { %>
                 <div class="bewerb-container">
                     <p>
+                        
                         <button data-index="<%=gruppe.id_gru%>" type="button" class="delete-gruppe">X</button>
                         <%= gruppe.gru_feuerwehr %>
 
@@ -118,8 +129,11 @@
 
                                 <a href="/bewerbe/gruppen/<%=gruppe.id_gru%>"> --></a>
                     </p>
+                    <% } %>
                     <% }); %>
+                   
                 </div>
+               
         </div>
 
         <button id="toggleGruppeBtn">Gruppe erstellen</button>
