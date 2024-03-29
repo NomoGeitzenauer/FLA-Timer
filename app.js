@@ -12,7 +12,8 @@ import moment from 'moment';
 app.set("view engine", "ejs");
 
 app.use(bodyParser.json());
-//all of the bewerbe
+
+//alle Bewerbe
 app.get("/bewerbe", async (req, res) => {
     const bewerbe = await getBewerbe();
     const formattedBewerbe = bewerbe.map(bewerb => ({
@@ -197,6 +198,7 @@ app.post("/bewerbe/:id/durchlaufe/:id2/deletefehlerEintrag/:id3", async (req, re
 });
 
 //creating a new bewerb
+
 app.post("/bewerbe", async (req, res) => {
     const { bew_name, bew_art, bew_wetter, bew_datum,bew_threshholdalterspunkte,bew_valuealterspunkte } = req.body;
     const datetimeValue = bew_datum;

@@ -62,7 +62,7 @@
                                 <% if (!durchlauf.gru_is_deleted) { %>
                                     <a href="/bewerbe/<%= bew_id %>/durchlaufe/<%= durchlauf.id_dur %>">Starten --></a>
                                 <% } else { %>
-                                    <p>Gruppe gelöscht</p>
+                                    <p>Gruppe archiviert</p>
                                 <% } %>
                             </td>
                         </tr>
@@ -113,7 +113,7 @@
             </ul>
         </div>
 
-        <h2>Bestehende Gruppen</h2>
+        <h2> <a href="/bewerbe/gruppen">Bestehende Gruppen</a></h2>
         <div class="scrollable-container">
             
             <% gruppen.forEach(gruppe=> { %>

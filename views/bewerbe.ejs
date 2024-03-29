@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/reset.css">
+
     <title>FLA-Bewerbe</title>
 
 </head>
@@ -82,7 +84,7 @@
 
                 try {
                     const response = await fetch(`/deleteBewerb/${bewerbId}`, {
-                        method: 'POST', // Change method to POST
+                        method: 'POST', 
                         headers: {
                             'Content-Type': 'application/json'
                         },
@@ -111,17 +113,16 @@
             const formData = new FormData(document.getElementById("bewerbForm"));
 
             const bewerbData = {};
-            for (const [key, value] of formData.entries()) {
+            for (const [key, value] of formData.entries()) { 
                 bewerbData[key] = value;
             }
-
             try {
                 const response = await fetch("/bewerbe", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json" // Set Content-Type to JSON
+                        "Content-Type": "application/json" 
                     },
-                    body: JSON.stringify(bewerbData) // Serialize form data as JSON
+                    body: JSON.stringify(bewerbData)
                 });
                 if (response.ok) {
                     alert("Bewerb erstellt");
