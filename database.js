@@ -176,7 +176,7 @@ export async function getdurchlaufFehler(dur_id) {
         SELECT f.id_feh, f.feh_name, m.mit_name, f.feh_punkte,
             COUNT(f.id_feh) AS error_count,
             f.feh_punkte * COUNT(f.id_feh) AS total_error_value
-        FROM \`tbl_fehler- link\` AS fl
+        FROM \`tbl_fehler-link\` AS fl
         JOIN tbl_fehler AS f ON fl.id_tbl_fehler_fk = f.id_feh
         JOIN tbl_mitglied AS m ON fl.id_tbl_mitglied_fk = m.id_mit
         WHERE fl.id_tbl_durchlauf_fk = ?
@@ -206,7 +206,7 @@ async function getGruppeIdByName(gruppeName) {
 }
 
 export async function createDurchlauf(bew_id, dur_gruppe, dur_bewerbsbahn) {
-    
+
     const id_dur_gruppe = await getGruppeIdByName(dur_gruppe);
     if (id_dur_gruppe === null) {
         throw new Error(`Group with name ${dur_gruppe} not found.`);
