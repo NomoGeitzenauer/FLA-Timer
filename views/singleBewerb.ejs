@@ -189,7 +189,7 @@
 
             document.querySelectorAll('.delete-gruppe').forEach(button => {
                 button.addEventListener('click', function (event) {
-                    if (confirm('Are you sure you want to delete this group?')) {
+                    if (confirm('Wollen sie diese Gruppe wirklich archivieren?')) {
                         const gruppeId = event.target.dataset.index;
                         const url = `/bewerbe/<%= bew_id %>/gruppen/${gruppeId}/delete`;
                         fetch(url, {

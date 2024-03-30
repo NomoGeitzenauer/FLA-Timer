@@ -113,8 +113,7 @@ export async function deleteGruppe(gru_id) {
     }
 }
 
-export async function restoreGruppe(gru_id)
-{
+export async function restoreGruppe(gru_id) {
     try {
         await pool.query(`UPDATE tbl_gruppe
         SET gru_is_deleted = FALSE
@@ -174,13 +173,14 @@ export async function deleteFehlerEintrag(fehlerID) {
 
 export async function getdurchlaufFehler(dur_id) {
     const [rows] = await pool.query(`
-        SELECT fl.\`id_feh-li\`, f.feh_name, m.mit_name, f.feh_punkte, COUNT(fl.\`id_feh-li\`) as error_count,
-               f.feh_punkte * COUNT(fl.\`id_feh-li\`) as total_error_value
-        FROM \`tbl_fehler-link\` fl
-        JOIN tbl_fehler f ON fl.id_tbl_fehler_fk = f.id_feh
-        JOIN tbl_mitglied m ON fl.id_tbl_mitglied_fk = m.id_mit
+        SELECT f.id_feh, f.feh_name, m.mit_name, f.feh_punkte,
+            COUNT(f.id_feh) AS error_count,
+            f.feh_punkte * COUNT(f.id_feh) AS total_error_value
+        FROM \`tbl_fehler- link\` AS fl
+        JOIN tbl_fehler AS f ON fl.id_tbl_fehler_fk = f.id_feh
+        JOIN tbl_mitglied AS m ON fl.id_tbl_mitglied_fk = m.id_mit
         WHERE fl.id_tbl_durchlauf_fk = ?
-        GROUP BY fl.id_tbl_fehler_fk;
+        GROUP BY f.id_feh;
     `, [dur_id]);
     return rows;
 }
@@ -206,26 +206,24 @@ async function getGruppeIdByName(gruppeName) {
 }
 
 export async function createDurchlauf(bew_id, dur_gruppe, dur_bewerbsbahn) {
+    
     const id_dur_gruppe = await getGruppeIdByName(dur_gruppe);
     if (id_dur_gruppe === null) {
         throw new Error(`Group with name ${dur_gruppe} not found.`);
     }
-
-    // Insert into tbl_gru_bew_link to link bewerb and gruppe
-     await pool.query(`
+    await pool.query(`
     INSERT INTO tbl_gru_bew_link (id_tbl_bew_fk, id_gb_link_gru_fk)
     VALUES (?, ?)
     `, [bew_id, id_dur_gruppe]);
 
     const insertId = await pool.query('SELECT LAST_INSERT_ID() as id');
     const lastInsertId = insertId[0][0].id;
-    console.log(lastInsertId);
 
     await pool.query(`
     CALL update_alterspunkte_trigger_after_insert_bew_link(?)
 `, [id_dur_gruppe]);
-    
-   const result = await pool.query(`
+
+    const result = await pool.query(`
          INSERT INTO tbl_durchlauf (id_tbl_gb_link_fk, dur_bewerbsbahn)
          VALUES (?, ?)
      `, [lastInsertId, dur_bewerbsbahn]);
@@ -262,7 +260,7 @@ export async function getAlterspunkte(id_dur) {
         WHERE td.id_dur = ?
     `, [id_dur]);
 
-    
+
     return rows[0].gb_link_alterspunkte;
 }
 

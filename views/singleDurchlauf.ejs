@@ -40,6 +40,7 @@
         
             <ul>
                 <% durchlauffehlerliste.forEach(durfehlerlist=> { %>
+                    
                     <li>
                         <%= durfehlerlist.feh_name%>
                             <%=durfehlerlist.mit_name%>
@@ -58,17 +59,28 @@
                 </thead>
                 <tbody>
                     <% durchlauffehler.forEach(durfehler=> { %>
-                        <tr>
-                            <td>
-                                <%= durfehler.feh_name %>
-                            </td>
-                            <td>
-                                <span id="errorCount<%= durfehler['feh_name'] %>">
-                                    <%= durfehler.error_count %>
-                                </span>
-                            </td>
-                        </tr>
-                        <% }); %>
+                        <% if (durfehler.error_count) { %>
+                            <tr>
+                                <td>
+                                    <%= durfehler.feh_name %>
+                                </td>
+                                <td>
+                                    <span id="errorCount<%= durfehler['feh_name'] %>">
+                                        <%= durfehler.error_count %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <% } else {%>
+                                <tr>
+                                    <td>
+                                        <%= durfehler.feh_name %>
+                                    </td>
+                                    <td>
+                                        0
+                                    </td>
+                                    <% } %>
+                                <% }); %>
+                        
                 </tbody>
             </table>
         
@@ -87,7 +99,7 @@
                         <% totalErrorSum +=durfehler.total_error_value; %>
                             <% }); %>
         
-                                <div>Gesamt-Punkte: <%= totalErrorSum %>
+                                <div>Gesamt-Fehlerpunkte: <%= totalErrorSum %>
                                 </div>
         
         
@@ -105,12 +117,7 @@
 
 
 
-                            '<% durchlauffehler.forEach(durfehler => { %>' +
-                                'const errorCountElement<%= durfehler["id_feh-li"] %> = document.getElementById("errorCount<%= durfehler["id_feh-li"] %>");' +
-                                'if (errorCountElement<%= durfehler["id_feh-li"] %>) {' +
-                                'errorCountElement<%= durfehler["id_feh-li"] %>.textContent = "<%= durfehler.error_count %>";' +
-                                '}' +
-                                '<% }); %>'
+
 //complete Durchlauf
                             document.getElementById('completeDurchlauf').addEventListener('click', function () {
                                 // Get the total error count and total sum from the page

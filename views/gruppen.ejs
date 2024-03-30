@@ -60,6 +60,7 @@
 
         document.querySelectorAll(".full-delete-gruppe").forEach((button) => {
             button.addEventListener("click", async (event) => {
+                if (confirm('Wollen sie diese Gruppe wirklich löchen?')) {
                 const gruppeId = event.target.dataset.index;
                 try {
                     const response = await fetch(`/bewerbe/0/gruppen/${gruppeId}/fulldelete`, {
@@ -68,7 +69,6 @@
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({ gruppeId: gruppeId})
-
                     });
 
                     if (response.ok) {
@@ -80,6 +80,7 @@
                 } catch (error) {
                     console.error('fetch /bewerb error:', error);
                 }
+            }
             });
         });
 
