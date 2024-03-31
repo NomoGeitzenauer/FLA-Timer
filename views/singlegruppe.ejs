@@ -14,7 +14,7 @@
     <header>
         <h1>FLA-Timer</h1>
         <h2><a href="/bewerbe">Bewerbsübersicht</a></h2>
-        <h1>Gruppenmitglieder</h1>
+        <h1>Mitglieder von Gruppe: <%=gruppe.gru_name%>, Feuerwehr: <%=gruppe.gru_feuerwehr%></h1>
         <button id="goBackButton" type="button">Back</button>
     </header>
 
@@ -77,8 +77,8 @@
                 <option value="M">M</option>
                 <option value="F">F</option>
             </select><br>
-            <label for="alter">Alter:</label>
-            <input type="number" id="alter" name="alter" min="0" max="100" required><br>
+            <label for="alter">Geburtsdatum:</label>
+            <input type="date" id="geburtsdatum" name="geburtsdatum" required><br>
             <label for="funktion">Funktion:</label>
             <select id="funktion" name="funktion" required>
                 <option value="Funktion 1">Funktion 1</option>

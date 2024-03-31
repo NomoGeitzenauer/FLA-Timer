@@ -45,9 +45,7 @@
             <!-- <input type="number" id="bew_art" name="bew_art" required>
              -->
              <label for="threshholdalterspunkte">Alterspunkte-Schwelle: </label>
-             <input type="number" name="bew_threshholdalterspunkte" id="bew_threshholdalterspunkte" required>
-             <label for="valuealterspunte">Alterspunkte pro Mitglied: </label>
-             <input type="number" name="bew_valuealterspunkte" id="bew_valuealterspunkte" required>
+             <input type="number" name="bew_threshholdalterspunkte" id="bew_threshholdalterspunkte" value="50" required>
              
             <label for="bew_wetter">Wetter:</label>
             <input type="text" id="bew_wetter" name="bew_wetter" required>
@@ -75,6 +73,14 @@
         <p>2024 Thomas & Nomo</p>
     </footer>
     <script>
+
+var now = new Date();
+
+// Format the date and time as required by the input field
+var formattedDate = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + 'T' + ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+
+// Set the default value of the input field
+document.getElementById('bew_datum').value = formattedDate;
 
         document.querySelector('main').addEventListener('click', async function (event) {
             console.log('Click event triggered');

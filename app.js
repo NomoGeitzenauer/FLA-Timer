@@ -5,7 +5,7 @@ const app = express()
 import bodyParser from 'body-parser';
 //using database
 import { getBewerbe, getBewerb, createBewerb, deleteBewerb, getMitglieder, getGruppenByBewerbId, getGruppeByDurchlauf, getFehler, createFehlerEintrag,getdurchlaufFehler,getdurchlaufFehlerListe } from './database.js'
-import { formatDate,deleteFehlerEintrag, fulldeleteGruppe,restoreGruppe} from './database.js'
+import { formatDate,deleteFehlerEintrag, fulldeleteGruppe,restoreGruppe,getGruppeById} from './database.js'
 import { getGruppen, createGruppen,deleteGruppe, getdruchlaufe, createDurchlauf,deleteDurchlauf, completeDurchlauf,createMitglied,deleteMitglied, getAlterspunkte, updateAlterspunkte} from './database.js'
 import moment from 'moment';
 //import { getMitglieder } from './database.mjs'
@@ -31,18 +31,20 @@ app.get("/bewerbe/gruppen/", async (req, res) => {
 app.get("/bewerbe/gruppen/:id", async (req, res) => {
     const gru_id = req.params.id;
     const mitglieder = await getMitglieder(gru_id);
+    const  gruppe = await getGruppeById(gru_id);
     if (!mitglieder) {
         res.status(404).send("mitglieder not found");
         return;
     }
-    res.render("singlegruppe.ejs", { mitglieder,gru_id });
+   
+    res.render("singlegruppe.ejs", { mitglieder,gru_id,gruppe});
 });
 
 app.post("/bewerbe/gruppen/:id", async (req, res) => {
     const gru_id = req.params.id;
-    const { name, nachname, geschlecht, alter, funktion, dienstgrad } = req.body;
+    const { name, nachname, geschlecht, geburtsdatum, funktion, dienstgrad } = req.body;
     console.log(req.body);
-    const mitglied = await createMitglied(name, nachname, geschlecht, alter, funktion, dienstgrad, gru_id);
+    const mitglied = await createMitglied(name, nachname, geschlecht, geburtsdatum, funktion, dienstgrad, gru_id);
     res.status(201).send({ message: "Mitglied created successfully" });
 });
 
@@ -200,11 +202,11 @@ app.post("/bewerbe/:id/durchlaufe/:id2/deletefehlerEintrag/:id3", async (req, re
 //creating a new bewerb
 
 app.post("/bewerbe", async (req, res) => {
-    const { bew_name, bew_art, bew_wetter, bew_datum,bew_threshholdalterspunkte,bew_valuealterspunkte } = req.body;
+    const { bew_name, bew_art, bew_wetter, bew_datum,bew_threshholdalterspunkte} = req.body;
     const datetimeValue = bew_datum;
     const formattedDatetime = moment(datetimeValue).format('YYYY-MM-DD HH:mm');
     console.log(formattedDatetime);
-    const bewerb = await createBewerb(bew_name, bew_art, bew_wetter, formattedDatetime, bew_threshholdalterspunkte, bew_valuealterspunkte);
+    const bewerb = await createBewerb(bew_name, bew_art, bew_wetter, formattedDatetime, bew_threshholdalterspunkte);
     res.status(201).send({ message: "Bewerb created successfully" });
 
 })

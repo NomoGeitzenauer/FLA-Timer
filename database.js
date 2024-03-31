@@ -24,11 +24,11 @@ export async function getBewerb(bew_id) {
     return rows[0];
 }
 
-export async function createBewerb(bew_name, bew_art, bew_wetter, bew_datum, bew_threshholdalterspunkte, bew_valuealterspunnkte) {
+export async function createBewerb(bew_name, bew_art, bew_wetter, bew_datum, bew_threshholdalterspunkte) {
     const result = await pool.query(`
-    INSERT INTO tbl_bewerb (bew_name, bew_art, bew_wetter,bew_datum,bew_threshholdalterspunkte,bew_valuealterspunkte)
-    VALUES (?, ?, ?, ?,?,?)
-    `, [bew_name, bew_art, bew_wetter, bew_datum, bew_threshholdalterspunkte, bew_valuealterspunnkte]);
+    INSERT INTO tbl_bewerb (bew_name, bew_art, bew_wetter,bew_datum,bew_threshholdalterspunkte)
+    VALUES (?, ?, ?, ?,?)
+    `, [bew_name, bew_art, bew_wetter, bew_datum, bew_threshholdalterspunkte]);
 
     const bew_id = result[0].insertId
     return getBewerb(bew_id);
@@ -204,6 +204,11 @@ async function getGruppeIdByName(gruppeName) {
         return null;
     }
 }
+export async function getGruppeById(gru_id)
+{
+    const [rows] = await pool.query('SELECT * FROM tbl_gruppe WHERE id_gru = ?', [gru_id]);
+    return rows[0];
+}
 
 export async function createDurchlauf(bew_id, dur_gruppe, dur_bewerbsbahn) {
 
@@ -276,11 +281,11 @@ export async function getMitglieder(id_gru) {
     return rows;
 }
 
-export async function createMitglied(mit_name, mit_nachname, mit_geschlecht, mit_alter, mit_funktion, mit_dienstgrad, gru_id) {
+export async function createMitglied(mit_name, mit_nachname, mit_geschlecht, mit_geburtstag, mit_funktion, mit_dienstgrad, gru_id) {
     const [rows] = await pool.query(`
-    INSERT INTO tbl_mitglied (mit_name, mit_nachname, mit_geschlecht, mit_alter, mit_funktion, mit_dienstgrad, id_tbl_gru_fk)
+    INSERT INTO tbl_mitglied (mit_name, mit_nachname, mit_geschlecht, mit_geburtstag, mit_funktion, mit_dienstgrad, id_tbl_gru_fk)
     VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [mit_name, mit_nachname, mit_geschlecht, mit_alter, mit_funktion, mit_dienstgrad, gru_id]);
+    `, [mit_name, mit_nachname, mit_geschlecht, mit_geburtstag, mit_funktion, mit_dienstgrad, gru_id]);
     return rows;
 }
 
