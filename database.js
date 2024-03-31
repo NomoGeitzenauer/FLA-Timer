@@ -173,17 +173,18 @@ export async function deleteFehlerEintrag(fehlerID) {
 
 export async function getdurchlaufFehler(dur_id) {
     const [rows] = await pool.query(`
-        SELECT f.id_feh, f.feh_name, m.mit_name, f.feh_punkte,
-            COUNT(f.id_feh) AS error_count,
-            f.feh_punkte * COUNT(f.id_feh) AS total_error_value
-        FROM \`tbl_fehler-link\` AS fl
-        JOIN tbl_fehler AS f ON fl.id_tbl_fehler_fk = f.id_feh
-        JOIN tbl_mitglied AS m ON fl.id_tbl_mitglied_fk = m.id_mit
-        WHERE fl.id_tbl_durchlauf_fk = ?
-        GROUP BY f.id_feh;
+    SELECT f.id_feh, f.feh_name, m.mit_name, f.feh_punkte,
+        COUNT(f.id_feh) AS error_count,
+        f.feh_punkte * COUNT(f.id_feh) AS total_error_value
+    FROM \`tbl_fehler-link\` AS fl
+    JOIN tbl_fehler AS f ON fl.id_tbl_fehler_fk = f.id_feh
+    JOIN tbl_mitglied AS m ON fl.id_tbl_mitglied_fk = m.id_mit
+    WHERE fl.id_tbl_durchlauf_fk = ?
+    GROUP BY f.id_feh;
     `, [dur_id]);
     return rows;
 }
+
 
 export async function getdurchlaufFehlerListe(dur_id) {
     const [rows] = await pool.query(`

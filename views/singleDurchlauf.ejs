@@ -17,7 +17,7 @@
         <p>Keine Mitglieder in der Gruppe</p>
         <a href="/bewerbe/gruppen/<%= durchlaufgruppe.id_gru %>">Mitglieder hinzufügen</a>
     <% } else {%>
-        <h1>Durchlauf der Gruppe <%= durchlaufgruppe.gru_name %>
+        <h1>Durchlauf der Gruppe: <%= durchlaufgruppe.gru_name %>, Feuerwehr: <%=durchlaufgruppe.gru_feuerwehr%>
         </h1>
         <a href="/bewerbe/gruppen/<%= durchlaufgruppe.id_gru %>">Mitglieder --></a>
         <form id="errorForm">
